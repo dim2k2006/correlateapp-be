@@ -1,0 +1,57 @@
+# Binaries and executables
+*.exe
+*.out
+*.app
+*.dll
+*.dylib
+
+# Build artifacts
+/build/
+/bin/
+/dist/
+
+# Go Modules
+/go.sum
+/go.mod
+
+# Dependency directories (for vendoring)
+vendor/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+
+# Logs and debug
+*.log
+*.test
+*.prof
+*.trace
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage and test reports
+*.cover
+*.cov
+*.gcda
+*.gcno
+*.prof
+*.test
+cover.out
+
+# macOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+ehthumbs.db
+
+# Git hooks (optional)
+/.githooks/
+
+# Local environment configuration
+.env
