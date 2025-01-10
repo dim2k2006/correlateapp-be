@@ -17,7 +17,13 @@ cd correlateapp-be
 go mod download
 ```
 
-3. Run the Application:
+3. Install golangci-lint
+
+```bash
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+```
+
+4. Run the Application:
 
 ```bash
 go run ./cmd/api/main.go
@@ -54,3 +60,4 @@ Benefits:
 - Removes unused dependencies.
 - Adds missing dependencies required by your imports.
 - Ensures go.mod and go.sum are in sync with your codebase.
+
