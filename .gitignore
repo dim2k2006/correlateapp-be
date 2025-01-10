@@ -10,10 +10,6 @@
 /bin/
 /dist/
 
-# Go Modules
-/go.sum
-/go.mod
-
 # Dependency directories (for vendoring)
 vendor/
 
