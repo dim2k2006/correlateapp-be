@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dim2k2006/correlateapp-be/pkg/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAdd(t *testing.T) {
@@ -19,11 +20,7 @@ func TestAdd(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			sum := utils.Add(tt.a, tt.b)
-			if sum != tt.expected {
-				t.Errorf("Add(%d, %d) = %d; want %d", tt.a, tt.b, sum, tt.expected)
-			}
-		})
+		sum := utils.Add(tt.a, tt.b)
+		assert.Equal(t, tt.expected, sum, "Add(%d, %d) should be %d", tt.a, tt.b, tt.expected)
 	}
 }
