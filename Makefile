@@ -1,6 +1,9 @@
 install:
 	go mod download
 
+dev:
+	go run ./cmd/api/main.go
+
 lint:
 	golangci-lint run
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,9 +14,15 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	log.Println("Starting server on :8080")
+	port := os.Getenv("PORT")
 
-	if err := app.Listen(":8080"); err != nil {
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Println("Starting server on " + port)
+
+	if err := app.Listen(":" + port); err != nil {
 		log.Fatalf("could not start server: %v", err)
 	}
 }
