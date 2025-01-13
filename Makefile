@@ -10,4 +10,4 @@ format:
 test:
 	go test ./...
 
-PHONY: test
+PHONY: install lint format test
