@@ -23,7 +23,13 @@ go mod download
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 ```
 
-4. Run the Application:
+4. Install goimports
+
+```bash
+go install golang.org/x/tools/cmd/goimports@latest
+```
+
+5. Run the Application:
 
 ```bash
 go run ./cmd/api/main.go
