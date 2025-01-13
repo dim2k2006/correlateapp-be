@@ -7,8 +7,6 @@ on:
     branches:
       - '**' # Triggers on PRs targeting any branch
   push:
-    branches:
-      - '**' # Triggers on pushes to any branch
     branches-ignore:
       - main # Excludes pushes to the main branch
 
@@ -41,18 +39,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      # 4. Install dependencies using Makefile
+      # 4. Install GolangCI-Lint
+      - name: Install GolangCI-Lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4
+
+      # 5. Install Goimports
+      - name: Install Goimports
+        run: go install golang.org/x/tools/cmd/goimports@latest
+
+      # 6. Install dependencies using Makefile
       - name: Install Dependencies
         run: make install
 
-      # 5. Run Linters
+      # 7. Run Linters
       - name: Run Linters
         run: make lint
 
-      # 6. Check Code Formatting
+      # 8. Check Code Formatting
       - name: Check Formatting
         run: make format
 
-      # 7. Run Tests
+      # 9. Run Tests
       - name: Run Tests
         run: make test
