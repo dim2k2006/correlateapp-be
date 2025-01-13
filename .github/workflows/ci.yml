@@ -7,8 +7,6 @@ on:
     branches:
       - '**' # Triggers on PRs targeting any branch
   push:
-    branches:
-      - '**' # Triggers on pushes to any branch
     branches-ignore:
       - main # Excludes pushes to the main branch
 
