@@ -4,5 +4,10 @@ install:
 lint:
 	golangci-lint run
 
-make format:
+format:
 	./check-format.sh
+
+test:
+	go test ./...
+
+PHONY: test
