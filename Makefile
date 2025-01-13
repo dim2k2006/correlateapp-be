@@ -3,3 +3,6 @@ install:
 
 lint:
 	golangci-lint run
+
+make format:
+	./check-format.sh
