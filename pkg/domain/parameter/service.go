@@ -7,10 +7,10 @@ import (
 )
 
 type Service interface {
-	CreateParameter(ctx context.Context, input *CreateParameterInput) (*Parameter, error)
+	CreateParameter(ctx context.Context, input CreateParameterInput) (*Parameter, error)
 	GetParameterByID(ctx context.Context, id uuid.UUID) (*Parameter, error)
 	ListParametersByUser(ctx context.Context, userID uuid.UUID) ([]*Parameter, error)
-	UpdateParameter(ctx context.Context, input *UpdateParameterInput) (*Parameter, error)
+	UpdateParameter(ctx context.Context, input UpdateParameterInput) (*Parameter, error)
 	DeleteParameter(ctx context.Context, id uuid.UUID) error
 }
 
