@@ -10,7 +10,7 @@ type Service interface {
 	CreateParameter(ctx context.Context, input *CreateParameterInput) (*Parameter, error)
 	GetParameterByID(ctx context.Context, id uuid.UUID) (*Parameter, error)
 	ListParametersByUser(ctx context.Context, userID uuid.UUID) ([]*Parameter, error)
-	UpdateParameter(ctx context.Context, param *Parameter) (*Parameter, error)
+	UpdateParameter(ctx context.Context, input *UpdateParameterInput) (*Parameter, error)
 	DeleteParameter(ctx context.Context, id uuid.UUID) error
 }
 
@@ -20,4 +20,11 @@ type CreateParameterInput struct {
 	Description string    `json:"description,omitempty"`
 	DataType    DataType  `json:"data_type" validate:"required,oneof=float boolean category"`
 	Unit        string    `json:"unit,omitempty"`
+}
+
+type UpdateParameterInput struct {
+	Name        string   `json:"name,omitempty" validate:"omitempty"`
+	Description string   `json:"description,omitempty"`
+	DataType    DataType `json:"data_type,omitempty" validate:"omitempty,oneof=float boolean category"`
+	Unit        string   `json:"unit,omitempty"`
 }
