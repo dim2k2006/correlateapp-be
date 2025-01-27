@@ -21,6 +21,7 @@ type CreateUserInput struct {
 }
 
 type UpdateUserInput struct {
-	FirstName string `json:"firstName,omitempty"`
-	LastName  string `json:"lastName,omitempty"`
+	ID        uuid.UUID `json:"id" validate:"required"`
+	FirstName string    `json:"firstName,omitempty"`
+	LastName  string    `json:"lastName,omitempty"`
 }
