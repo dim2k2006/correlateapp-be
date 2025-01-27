@@ -9,9 +9,9 @@ import (
 type DataType string
 
 const (
-	DataTypeFloat    DataType = "float"
-	DataTypeBoolean  DataType = "boolean"
-	DataTypeCategory DataType = "category"
+	DataTypeFloat DataType = "float"
+	// DataTypeBoolean DataType = "boolean"
+	// DataTypeCategory DataType = "category"
 	// Future data types can be added here.
 )
 
