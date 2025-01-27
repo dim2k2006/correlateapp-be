@@ -18,13 +18,13 @@ type CreateParameterInput struct {
 	UserID      uuid.UUID `json:"user_id" validate:"required"`
 	Name        string    `json:"name" validate:"required"`
 	Description string    `json:"description,omitempty"`
-	DataType    DataType  `json:"data_type" validate:"required,oneof=float boolean category"`
+	DataType    DataType  `json:"data_type" validate:"required,oneof=float"`
 	Unit        string    `json:"unit,omitempty"`
 }
 
 type UpdateParameterInput struct {
 	Name        string   `json:"name,omitempty" validate:"omitempty"`
 	Description string   `json:"description,omitempty"`
-	DataType    DataType `json:"data_type,omitempty" validate:"omitempty,oneof=float boolean category"`
+	DataType    DataType `json:"data_type,omitempty" validate:"omitempty,oneof=float"`
 	Unit        string   `json:"unit,omitempty"`
 }
