@@ -23,8 +23,9 @@ type CreateParameterInput struct {
 }
 
 type UpdateParameterInput struct {
-	Name        string   `json:"name,omitempty" validate:"omitempty"`
-	Description string   `json:"description,omitempty"`
-	DataType    DataType `json:"dataType,omitempty" validate:"omitempty,oneof=float"`
-	Unit        string   `json:"unit,omitempty"`
+	ID          uuid.UUID `json:"id" validate:"required"`
+	Name        string    `json:"name,omitempty" validate:"omitempty"`
+	Description string    `json:"description,omitempty"`
+	DataType    DataType  `json:"dataType,omitempty" validate:"omitempty,oneof=float"`
+	Unit        string    `json:"unit,omitempty"`
 }
