@@ -1,6 +1,7 @@
 package parameter
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -22,7 +23,7 @@ var (
 	ErrParameterNotFound = errors.New("parameter not found")
 )
 
-func (r *InMemoryRepository) CreateParameter(parameter *Parameter) (*Parameter, error) {
+func (r *InMemoryRepository) CreateParameter(_ context.Context, parameter *Parameter) (*Parameter, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -31,7 +32,7 @@ func (r *InMemoryRepository) CreateParameter(parameter *Parameter) (*Parameter, 
 	return parameter, nil
 }
 
-func (r *InMemoryRepository) GetParameterByID(id uuid.UUID) (*Parameter, error) {
+func (r *InMemoryRepository) GetParameterByID(_ context.Context, id uuid.UUID) (*Parameter, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -43,7 +44,7 @@ func (r *InMemoryRepository) GetParameterByID(id uuid.UUID) (*Parameter, error) 
 	return parameter, nil
 }
 
-func (r *InMemoryRepository) ListParametersByUser(userID uuid.UUID) ([]*Parameter, error) {
+func (r *InMemoryRepository) ListParametersByUser(_ context.Context, userID uuid.UUID) ([]*Parameter, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -57,7 +58,7 @@ func (r *InMemoryRepository) ListParametersByUser(userID uuid.UUID) ([]*Paramete
 	return parameters, nil
 }
 
-func (r *InMemoryRepository) UpdateParameter(param *Parameter) (*Parameter, error) {
+func (r *InMemoryRepository) UpdateParameter(_ context.Context, param *Parameter) (*Parameter, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -70,7 +71,7 @@ func (r *InMemoryRepository) UpdateParameter(param *Parameter) (*Parameter, erro
 	return param, nil
 }
 
-func (r *InMemoryRepository) DeleteParameter(id uuid.UUID) error {
+func (r *InMemoryRepository) DeleteParameter(_ context.Context, id uuid.UUID) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 

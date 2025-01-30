@@ -6,27 +6,30 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/google/uuid"
 )
 
 type ServiceImpl struct {
-	repo Repository
+	repo             Repository
+	parameterService parameter.Service
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, parameterService parameter.Service) Service {
 	return &ServiceImpl{
-		repo: repo,
+		repo:             repo,
+		parameterService: parameterService,
 	}
 }
 
-func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasurementInput) (*Measurement, error) {
+func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasurementInput) (Measurement, error) {
 	switch input.Type {
 	case MeasurementTypeFloat:
 		v, ok := input.Value.(float64)
 		if !ok {
 			return nil, errors.New("expected float value for measurement")
 		}
-		measurement := FloatMeasurement{
+		measurement := &FloatMeasurement{
 			BaseMeasurement: BaseMeasurement{
 				Type:        MeasurementTypeFloat,
 				ID:          uuid.New(),
@@ -39,7 +42,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 			},
 			Value: v,
 		}
-		return s.repo.CreateMeasurement(ctx, &measurement)
+		return s.repo.CreateMeasurement(ctx, measurement)
 	// case MeasurementTypeBoolean:
 	//	// parse `input.Value` as bool
 	//	b, ok := input.Value.(bool)
@@ -65,11 +68,11 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 	}
 }
 
-func (s *ServiceImpl) ListMeasurementsByUser(ctx context.Context, userID uuid.UUID) ([]*Measurement, error) {
+func (s *ServiceImpl) ListMeasurementsByUser(ctx context.Context, userID uuid.UUID) ([]Measurement, error) {
 	return s.repo.ListMeasurementsByUser(ctx, userID)
 }
 
-func (s *ServiceImpl) ListMeasurementsByParameter(ctx context.Context, parameterID uuid.UUID) ([]*Measurement, error) {
+func (s *ServiceImpl) ListMeasurementsByParameter(ctx context.Context, parameterID uuid.UUID) ([]Measurement, error) {
 	return s.repo.ListMeasurementsByParameter(ctx, parameterID)
 }
 

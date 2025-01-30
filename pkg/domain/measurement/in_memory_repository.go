@@ -1,6 +1,7 @@
 package measurement
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -23,44 +24,44 @@ var (
 	ErrInvalidMeasurement  = errors.New("invalid measurement")
 )
 
-func (repo *InMemoryRepository) CreateMeasurement(measurement Measurement) (*Measurement, error) {
+func (repo *InMemoryRepository) CreateMeasurement(_ context.Context, measurement Measurement) (Measurement, error) {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
 
 	repo.measurements[measurement.GetID()] = measurement
 
-	return &measurement, nil
+	return measurement, nil
 }
 
-func (repo *InMemoryRepository) ListMeasurementsByUser(userID uuid.UUID) ([]*Measurement, error) {
+func (repo *InMemoryRepository) ListMeasurementsByUser(_ context.Context, userID uuid.UUID) ([]Measurement, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
 
-	var results []*Measurement
+	var results []Measurement
 	for _, measurement := range repo.measurements {
 		if measurement.GetUserID() == userID {
-			results = append(results, &measurement)
+			results = append(results, measurement)
 		}
 	}
 
 	return results, nil
 }
 
-func (repo *InMemoryRepository) ListMeasurementsByParameter(parameterID uuid.UUID) ([]*Measurement, error) {
+func (repo *InMemoryRepository) ListMeasurementsByParameter(_ context.Context, parameterID uuid.UUID) ([]Measurement, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
 
-	var results []*Measurement
+	var results []Measurement
 	for _, measurement := range repo.measurements {
 		if measurement.GetParameterID() == parameterID {
-			results = append(results, &measurement)
+			results = append(results, measurement)
 		}
 	}
 
 	return results, nil
 }
 
-func (repo *InMemoryRepository) DeleteMeasurement(id uuid.UUID) error {
+func (repo *InMemoryRepository) DeleteMeasurement(_ context.Context, id uuid.UUID) error {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
 
