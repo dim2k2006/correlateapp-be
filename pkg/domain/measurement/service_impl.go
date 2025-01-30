@@ -39,7 +39,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 			},
 			Value: v,
 		}
-		return s.repo.CreateMeasurement(ctx, measurement)
+		return s.repo.CreateMeasurement(ctx, &measurement)
 	// case MeasurementTypeBoolean:
 	//	// parse `input.Value` as bool
 	//	b, ok := input.Value.(bool)
