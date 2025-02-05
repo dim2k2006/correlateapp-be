@@ -2,13 +2,16 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/dim2k2006/correlateapp-be/cmd/api/middleware"
+	"github.com/dim2k2006/correlateapp-be/cmd/api/schemas"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -50,11 +53,27 @@ func main() {
 	api := app.Group("/api", middleware.VerifySignatureMiddleware(secretKeys))
 
 	api.Post("/users", func(c *fiber.Ctx) error {
-		var input user.CreateUserInput
-		if err := c.BodyParser(&input); err != nil {
+		var req schemas.CreateUserRequest
+
+		if err := c.BodyParser(&req); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Invalid input: " + err.Error(),
 			})
+		}
+
+		if err := req.Validate(); err != nil {
+			var validationErrors validator.ValidationErrors
+			errors.As(err, &validationErrors)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   "Validation failed",
+				"details": validationErrors.Error(),
+			})
+		}
+
+		input := user.CreateUserInput{
+			ExternalID: req.ExternalID,
+			FirstName:  req.FirstName,
+			LastName:   req.LastName,
 		}
 
 		ctx := context.Background()
