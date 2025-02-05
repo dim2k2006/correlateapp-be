@@ -17,10 +17,6 @@ func main() {
 		return c.SendString("It is alive 🔥🔥🔥. Now: " + now.Format(time.RFC3339))
 	})
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
 	port := os.Getenv("PORT")
 
 	if port == "" {
