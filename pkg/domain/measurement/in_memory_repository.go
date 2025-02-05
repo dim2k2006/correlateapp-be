@@ -47,7 +47,10 @@ func (repo *InMemoryRepository) ListMeasurementsByUser(_ context.Context, userID
 	return results, nil
 }
 
-func (repo *InMemoryRepository) ListMeasurementsByParameter(_ context.Context, parameterID uuid.UUID) ([]Measurement, error) {
+func (repo *InMemoryRepository) ListMeasurementsByParameter(
+	_ context.Context,
+	parameterID uuid.UUID,
+) ([]Measurement, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
 
