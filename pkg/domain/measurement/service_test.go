@@ -1,9 +1,10 @@
-package measurement
+package measurement_test
 
 import (
 	"context"
 	"testing"
 
+	"github.com/dim2k2006/correlateapp-be/pkg/domain/measurement"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -13,8 +14,8 @@ func TestCreateMeasurement_Success(t *testing.T) {
 	parameterRepository := parameter.NewInMemoryRepository()
 	parameterService := parameter.NewService(parameterRepository)
 
-	measurementRepository := NewInMemoryRepository()
-	measurementService := NewService(measurementRepository, parameterService)
+	measurementRepository := measurement.NewInMemoryRepository()
+	measurementService := measurement.NewService(measurementRepository, parameterService)
 
 	parameterInput := parameter.CreateParameterInput{
 		UserID:      uuid.UUID{},
@@ -29,8 +30,8 @@ func TestCreateMeasurement_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdParam)
 
-	measurementInput := CreateMeasurementInput{
-		Type:        MeasurementTypeFloat,
+	measurementInput := measurement.CreateMeasurementInput{
+		Type:        measurement.MeasurementTypeFloat,
 		UserID:      uuid.UUID{},
 		ParameterID: createdParam.ID,
 		Notes:       "Test Notes",
@@ -42,10 +43,12 @@ func TestCreateMeasurement_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdMeasurement)
 
-	floatMeas, ok := createdMeasurement.(*FloatMeasurement)
+	floatMeas, ok := createdMeasurement.(*measurement.FloatMeasurement)
 	assert.True(t, ok)
 	assert.Equal(t, 25.5, floatMeas.Value)
-	assert.Equal(t, MeasurementTypeFloat, floatMeas.Type)
+	assert.Equal(t, measurement.MeasurementTypeFloat, floatMeas.Type)
 	assert.Equal(t, createdParam.ID, floatMeas.ParameterID)
 	assert.Equal(t, createdParam.UserID, floatMeas.UserID)
 }
+
+// https://chatgpt.com/c/678a9722-bd3c-800d-b4cb-bb5d2566a59d?model=o1-mini
