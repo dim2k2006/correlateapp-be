@@ -23,6 +23,11 @@ func NewService(repo Repository, parameterService parameter.Service) Service {
 }
 
 func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasurementInput) (Measurement, error) {
+	measurementParameter, err := s.parameterService.GetParameterByID(ctx, input.ParameterID)
+	if err != nil {
+		return nil, err
+	}
+
 	switch input.Type {
 	case MeasurementTypeFloat:
 		v, ok := input.Value.(float64)
@@ -34,7 +39,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 				Type:        MeasurementTypeFloat,
 				ID:          uuid.New(),
 				UserID:      input.UserID,
-				ParameterID: input.ParameterID,
+				ParameterID: measurementParameter.ID,
 				Timestamp:   input.Timestamp,
 				Notes:       input.Notes,
 				CreatedAt:   time.Now(),
