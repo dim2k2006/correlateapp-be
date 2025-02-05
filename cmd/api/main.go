@@ -4,26 +4,44 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/dim2k2006/correlateapp-be/cmd/api/middleware"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
 func main() {
+	// Load environment variables
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	secretKeysString := os.Getenv("API_SECRET_KEYS")
+	if secretKeysString == "" {
+		log.Fatal("API_SECRET_KEYS is empty string")
+	}
+
+	secretKeys := strings.Split(secretKeysString, ",")
+	if len(secretKeys) == 0 {
+		log.Fatal("API_SECRET_KEYS is empty")
+	}
+
 	userRepository := user.NewInMemoryRepository()
 	userService := user.NewService(userRepository)
 
 	app := fiber.New()
 
-	api := app.Group("/api")
-
-	api.Get("/health", func(c *fiber.Ctx) error {
+	app.Get("/health", func(c *fiber.Ctx) error {
 		now := time.Now()
 
 		return c.SendString("It is alive 🔥🔥🔥. Now: " + now.Format(time.RFC3339))
 	})
+
+	api := app.Group("/api", middleware.VerifySignatureMiddleware(secretKeys))
 
 	api.Post("/users", func(c *fiber.Ctx) error {
 		var input user.CreateUserInput
@@ -126,12 +144,6 @@ func main() {
 		// Return no content status upon successful deletion.
 		return c.SendStatus(fiber.StatusNoContent)
 	})
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "8080"
-	}
 
 	log.Println("Starting server on " + port)
 
