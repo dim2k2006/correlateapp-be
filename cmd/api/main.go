@@ -17,13 +17,15 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/health", func(c *fiber.Ctx) error {
+	api := app.Group("/api")
+
+	api.Get("/health", func(c *fiber.Ctx) error {
 		now := time.Now()
 
 		return c.SendString("It is alive 🔥🔥🔥. Now: " + now.Format(time.RFC3339))
 	})
 
-	app.Post("/users", func(c *fiber.Ctx) error {
+	api.Post("/users", func(c *fiber.Ctx) error {
 		var input user.CreateUserInput
 		if err := c.BodyParser(&input); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -42,7 +44,7 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(createdUser)
 	})
 
-	app.Get("/users/:id", func(c *fiber.Ctx) error {
+	api.Get("/users/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, err := uuid.Parse(idStr)
 		if err != nil {
@@ -62,7 +64,7 @@ func main() {
 		return c.JSON(userData)
 	})
 
-	app.Get("/users/external/:externalId", func(c *fiber.Ctx) error {
+	api.Get("/users/external/:externalId", func(c *fiber.Ctx) error {
 		externalID := c.Params("externalId")
 		ctx := context.Background()
 		userData, err := userService.GetUserByExternalID(ctx, externalID)
@@ -74,7 +76,7 @@ func main() {
 		return c.JSON(userData)
 	})
 
-	app.Put("/users/:id", func(c *fiber.Ctx) error {
+	api.Put("/users/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, uuidParseErr := uuid.Parse(idStr)
 		if uuidParseErr != nil {
@@ -105,7 +107,7 @@ func main() {
 		return c.JSON(updatedUser)
 	})
 
-	app.Delete("/users/:id", func(c *fiber.Ctx) error {
+	api.Delete("/users/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, uuidParseErr := uuid.Parse(idStr)
 		if uuidParseErr != nil {
