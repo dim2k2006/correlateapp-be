@@ -15,13 +15,13 @@ type Service interface {
 }
 
 type CreateUserInput struct {
-	ExternalID string `json:"externalId" validate:"required"`
-	FirstName  string `json:"firstName" validate:"required"`
-	LastName   string `json:"lastName" validate:"required"`
+	ExternalID string
+	FirstName  string
+	LastName   string
 }
 
 type UpdateUserInput struct {
-	ID        uuid.UUID `json:"id" validate:"required"`
-	FirstName string    `json:"firstName,omitempty"`
-	LastName  string    `json:"lastName,omitempty"`
+	ID        uuid.UUID
+	FirstName string
+	LastName  string
 }
