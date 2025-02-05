@@ -8,6 +8,7 @@ import (
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateMeasurement_Success(t *testing.T) {
@@ -27,7 +28,7 @@ func TestCreateMeasurement_Success(t *testing.T) {
 
 	createdParam, err := parameterService.CreateParameter(context.Background(), parameterInput)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, createdParam)
 
 	measurementInput := measurement.CreateMeasurementInput{
@@ -40,12 +41,12 @@ func TestCreateMeasurement_Success(t *testing.T) {
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, createdMeasurement)
 
 	floatMeas, ok := createdMeasurement.(*measurement.FloatMeasurement)
 	assert.True(t, ok)
-	assert.Equal(t, 25.5, floatMeas.Value)
+	assert.InEpsilon(t, 25.5, floatMeas.Value, 0.0001)
 	assert.Equal(t, measurement.MeasurementTypeFloat, floatMeas.Type)
 	assert.Equal(t, createdParam.ID, floatMeas.ParameterID)
 	assert.Equal(t, createdParam.UserID, floatMeas.UserID)
