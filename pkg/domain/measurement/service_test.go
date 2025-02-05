@@ -147,7 +147,7 @@ func TestCreateMeasurement_UnsupportedType_ForFloatMeasurement(t *testing.T) {
 	assert.Contains(t, err.Error(), "unsupported measurement type")
 }
 
-//func TestUpdateMeasurement_Failure_TypeMismatch_ForFloatMeasurement(t *testing.T) {
+// func TestUpdateMeasurement_Failure_TypeMismatch_ForFloatMeasurement(t *testing.T) {
 //	parameterRepository := parameter.NewInMemoryRepository()
 //	parameterService := parameter.NewService(parameterRepository)
 //
@@ -196,6 +196,69 @@ func TestCreateMeasurement_UnsupportedType_ForFloatMeasurement(t *testing.T) {
 //	require.Error(t, err)
 //	assert.Nil(t, updatedMeasurement)
 //	assert.Contains(t, err.Error(), "invalid value type for float measurement")
+//}
+
+//func TestUpdateMeasurement_Success_WithConsistentTypes_ForFloatMeasurement(t *testing.T) {
+//	// Arrange
+//	paramRepo := parameter.NewInMemoryRepository()
+//	paramService := parameter.NewService(paramRepo)
+//
+//	measRepo := measurement.NewInMemoryRepository()
+//	measService := measurement.NewService(measRepo, paramService)
+//
+//	// Create a Parameter with DataTypeFloat
+//	paramInput := parameter.CreateParameterInput{
+//		UserID:      uuid.New(),
+//		Name:        "Temperature",
+//		Description: "Ambient temperature in Celsius",
+//		DataType:    parameter.DataTypeFloat,
+//		Unit:        "Celsius",
+//	}
+//
+//	createdParam, err := paramService.CreateParameter(context.Background(), paramInput)
+//	require.NoError(t, err)
+//	require.NotNil(t, createdParam)
+//
+//	// Create an initial FloatMeasurement
+//	createMeasInput := measurement.CreateMeasurementInput{
+//		Type:        measurement.MeasurementTypeFloat,
+//		UserID:      createdParam.UserID,
+//		ParameterID: createdParam.ID,
+//		Value:       25.5,
+//		Notes:       "Initial measurement",
+//		Timestamp:   time.Now().UTC(),
+//	}
+//
+//	createdMeas, err := measService.CreateMeasurement(context.Background(), createMeasInput)
+//	require.NoError(t, err)
+//	require.NotNil(t, createdMeas)
+//
+//	floatMeas, ok := createdMeas.(*measurement.FloatMeasurement)
+//	require.True(t, ok, "expected created measurement to be of type FloatMeasurement")
+//
+//	// Prepare update input with a new valid float value
+//	newValue := 26.0
+//	updateInput := UpdateMeasurementInput{
+//		ID:    floatMeas.ID,
+//		Value: newValue,
+//		Notes: "Updated measurement",
+//	}
+//
+//	// Act: Update the measurement
+//	updatedMeas, err := measService.UpdateMeasurement(context.Background(), updateInput)
+//	require.NoError(t, err)
+//	require.NotNil(t, updatedMeas)
+//
+//	updatedFloatMeas, ok := updatedMeas.(FloatMeasurement)
+//	require.True(t, ok, "expected updated measurement to be of type FloatMeasurement")
+//
+//	// Assert: Verify that the measurement has been updated
+//	assert.InEpsilon(t, newValue, updatedFloatMeas.Value, 0.0001, "updated value should match new value")
+//	assert.Equal(t, floatMeas.ID, updatedFloatMeas.ID, "measurement ID should remain unchanged")
+//	assert.Equal(t, floatMeas.UserID, updatedFloatMeas.UserID, "userID should remain unchanged")
+//	assert.Equal(t, floatMeas.ParameterID, updatedFloatMeas.ParameterID, "parameterID should remain unchanged")
+//	assert.Equal(t, "Updated measurement", updatedFloatMeas.Notes, "notes should be updated")
+//	assert.True(t, updatedFloatMeas.UpdatedAt.After(updatedFloatMeas.CreatedAt), "updatedAt should be after createdAt")
 //}
 
 // https://chatgpt.com/c/678a9722-bd3c-800d-b4cb-bb5d2566a59d?model=o1-mini
