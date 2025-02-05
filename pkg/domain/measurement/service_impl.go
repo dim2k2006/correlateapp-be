@@ -27,7 +27,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 	case MeasurementTypeFloat:
 		v, ok := input.Value.(float64)
 		if !ok {
-			return nil, errors.New("expected float value for measurement")
+			return nil, errors.New("invalid value type for float measurement")
 		}
 		measurement := &FloatMeasurement{
 			BaseMeasurement: BaseMeasurement{
