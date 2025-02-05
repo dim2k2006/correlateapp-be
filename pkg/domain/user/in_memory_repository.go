@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -22,7 +23,7 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 )
 
-func (r *InMemoryRepository) CreateUser(user *User) (*User, error) {
+func (r *InMemoryRepository) CreateUser(_ context.Context, user *User) (*User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -31,7 +32,7 @@ func (r *InMemoryRepository) CreateUser(user *User) (*User, error) {
 	return user, nil
 }
 
-func (r *InMemoryRepository) GetUserByID(id uuid.UUID) (*User, error) {
+func (r *InMemoryRepository) GetUserByID(_ context.Context, id uuid.UUID) (*User, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -43,7 +44,7 @@ func (r *InMemoryRepository) GetUserByID(id uuid.UUID) (*User, error) {
 	return user, nil
 }
 
-func (r *InMemoryRepository) GetUserByExternalID(externalID string) (*User, error) {
+func (r *InMemoryRepository) GetUserByExternalID(_ context.Context, externalID string) (*User, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -56,7 +57,7 @@ func (r *InMemoryRepository) GetUserByExternalID(externalID string) (*User, erro
 	return nil, ErrUserNotFound
 }
 
-func (r *InMemoryRepository) UpdateUser(user *User) (*User, error) {
+func (r *InMemoryRepository) UpdateUser(_ context.Context, user *User) (*User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -65,7 +66,7 @@ func (r *InMemoryRepository) UpdateUser(user *User) (*User, error) {
 	return user, nil
 }
 
-func (r *InMemoryRepository) DeleteUser(id uuid.UUID) error {
+func (r *InMemoryRepository) DeleteUser(_ context.Context, id uuid.UUID) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
