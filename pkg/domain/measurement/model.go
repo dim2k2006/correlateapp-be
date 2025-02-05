@@ -1,9 +1,6 @@
 package measurement
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,51 +29,91 @@ type FloatMeasurement struct {
 	Value float64 `json:"value"`
 }
 
+func (fm *FloatMeasurement) GetID() uuid.UUID {
+	return fm.ID
+}
+
+func (fm *FloatMeasurement) GetUserID() uuid.UUID {
+	return fm.UserID
+}
+
+func (fm *FloatMeasurement) GetParameterID() uuid.UUID {
+	return fm.ParameterID
+}
+
+func (fm *FloatMeasurement) GetType() Type {
+	return fm.Type
+}
+
+func (fm *FloatMeasurement) GetTimestamp() time.Time {
+	return fm.Timestamp
+}
+
+func (fm *FloatMeasurement) GetNotes() string {
+	return fm.Notes
+}
+
+func (fm *FloatMeasurement) SetID(id uuid.UUID) {
+	fm.ID = id
+}
+
+func (fm *FloatMeasurement) SetCreatedAt(t time.Time) {
+	fm.CreatedAt = t
+}
+
+func (fm *FloatMeasurement) SetUpdatedAt(t time.Time) {
+	fm.UpdatedAt = t
+}
+
 type BooleanMeasurement struct {
 	BaseMeasurement
 	Value bool `json:"value"` // Boolean-specific field
 }
 
-type Measurement interface{}
-
-type Wrapper struct {
-	Measurement Measurement `json:"-"`
+func (bm *BooleanMeasurement) GetID() uuid.UUID {
+	return bm.ID
 }
 
-func (mw Wrapper) MarshalJSON() ([]byte, error) {
-	switch m := mw.Measurement.(type) {
-	case FloatMeasurement:
-		return json.Marshal(m)
-	case BooleanMeasurement:
-		return json.Marshal(m)
-	default:
-		return nil, fmt.Errorf("unsupported measurement type: %T", m)
-	}
+func (bm *BooleanMeasurement) GetUserID() uuid.UUID {
+	return bm.UserID
 }
 
-func (mw *Wrapper) UnmarshalJSON(data []byte) error {
-	var base struct {
-		Type Type `json:"type"`
-	}
-	if err := json.Unmarshal(data, &base); err != nil {
-		return err
-	}
+func (bm *BooleanMeasurement) GetParameterID() uuid.UUID {
+	return bm.ParameterID
+}
 
-	switch base.Type {
-	case MeasurementTypeFloat:
-		var fm FloatMeasurement
-		if err := json.Unmarshal(data, &fm); err != nil {
-			return err
-		}
-		mw.Measurement = fm
-	// case MeasurementTypeBoolean:
-	//	var bm BooleanMeasurement
-	//	if err := json.Unmarshal(data, &bm); err != nil {
-	//		return err
-	//	}
-	//	mw.Measurement = bm
-	default:
-		return errors.New("unknown measurement type: " + string(base.Type))
-	}
-	return nil
+func (bm *BooleanMeasurement) GetType() Type {
+	return bm.Type
+}
+
+func (bm *BooleanMeasurement) GetTimestamp() time.Time {
+	return bm.Timestamp
+}
+
+func (bm *BooleanMeasurement) GetNotes() string {
+	return bm.Notes
+}
+
+func (bm *BooleanMeasurement) SetID(id uuid.UUID) {
+	bm.ID = id
+}
+
+func (bm *BooleanMeasurement) SetCreatedAt(t time.Time) {
+	bm.CreatedAt = t
+}
+
+func (bm *BooleanMeasurement) SetUpdatedAt(t time.Time) {
+	bm.UpdatedAt = t
+}
+
+type Measurement interface {
+	GetID() uuid.UUID
+	GetUserID() uuid.UUID
+	GetParameterID() uuid.UUID
+	GetType() Type
+	GetTimestamp() time.Time
+	GetNotes() string
+	SetID(uuid.UUID)
+	SetCreatedAt(time.Time)
+	SetUpdatedAt(time.Time)
 }
