@@ -11,10 +11,16 @@ import (
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Load environment variables
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found, using system environment variables")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
