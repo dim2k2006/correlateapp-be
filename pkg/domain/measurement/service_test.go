@@ -147,4 +147,55 @@ func TestCreateMeasurement_UnsupportedType_ForFloatMeasurement(t *testing.T) {
 	assert.Contains(t, err.Error(), "unsupported measurement type")
 }
 
+//func TestUpdateMeasurement_Failure_TypeMismatch_ForFloatMeasurement(t *testing.T) {
+//	parameterRepository := parameter.NewInMemoryRepository()
+//	parameterService := parameter.NewService(parameterRepository)
+//
+//	measurementRepository := measurement.NewInMemoryRepository()
+//	measurementService := measurement.NewService(measurementRepository, parameterService)
+//
+//	// Create a Parameter with DataTypeFloat.
+//	paramInput := parameter.CreateParameterInput{
+//		UserID:      uuid.New(),
+//		Name:        "Temperature",
+//		Description: "Ambient temperature in Celsius",
+//		DataType:    parameter.DataTypeFloat,
+//		Unit:        "Celsius",
+//	}
+//	createdParam, err := parameterService.CreateParameter(context.Background(), paramInput)
+//	require.NoError(t, err)
+//	require.NotNil(t, createdParam)
+//
+//	// Create a FloatMeasurement successfully.
+//	measurementInput := measurement.CreateMeasurementInput{
+//		Type:        measurement.MeasurementTypeFloat,
+//		UserID:      createdParam.UserID,
+//		ParameterID: createdParam.ID,
+//		Value:       25.5,
+//		Notes:       "Initial float measurement",
+//		Timestamp:   time.Now().UTC(),
+//	}
+//	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
+//	require.NoError(t, err)
+//	require.NotNil(t, createdMeasurement)
+//
+//	// Assert that the created measurement is a FloatMeasurement.
+//	floatMeas, ok := createdMeasurement.(*measurement.FloatMeasurement)
+//	require.True(t, ok, "created measurement should be of type FloatMeasurement")
+//
+//	// Prepare UpdateMeasurementInput with mismatched value type: using a boolean instead of a float.
+//	updateInput := measurement.UpdateMeasurementInput{
+//		ID:    floatMeas.ID,
+//		Value: true, // Mismatched value: expected a float64, provided a bool.
+//	}
+//
+//	// Act: Attempt to update the measurement.
+//	updatedMeasurement, err := measurementService.UpdateMeasurement(context.Background(), updateInput)
+//
+//	// Assert: Expect an error due to type mismatch.
+//	require.Error(t, err)
+//	assert.Nil(t, updatedMeasurement)
+//	assert.Contains(t, err.Error(), "invalid value type for float measurement")
+//}
+
 // https://chatgpt.com/c/678a9722-bd3c-800d-b4cb-bb5d2566a59d?model=o1-mini
