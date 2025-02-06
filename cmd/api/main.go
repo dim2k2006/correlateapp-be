@@ -84,7 +84,7 @@ func main() {
 			})
 		}
 
-		return c.Status(fiber.StatusCreated).JSON(createdUser)
+		return c.Status(fiber.StatusCreated).JSON(schemas.NewUserResponse(createdUser))
 	})
 
 	api.Get("/users/:id", func(c *fiber.Ctx) error {
@@ -104,7 +104,7 @@ func main() {
 			})
 		}
 
-		return c.JSON(userData)
+		return c.JSON(schemas.NewUserResponse(userData))
 	})
 
 	api.Get("/users/external/:externalId", func(c *fiber.Ctx) error {
@@ -116,7 +116,7 @@ func main() {
 				"error": err.Error(),
 			})
 		}
-		return c.JSON(userData)
+		return c.JSON(schemas.NewUserResponse(userData))
 	})
 
 	api.Put("/users/:id", func(c *fiber.Ctx) error {
@@ -128,16 +128,27 @@ func main() {
 			})
 		}
 
-		var input user.UpdateUserInput
-		if err := c.BodyParser(&input); err != nil {
+		var req schemas.UpdateUserRequest
+		if err := c.BodyParser(&req); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Invalid input: " + err.Error(),
 			})
 		}
 
-		// Optionally, ensure that the URL id matches the body id.
-		// In this example we override the input.ID with the id from the URL.
-		input.ID = id
+		if err := req.Validate(); err != nil {
+			var validationErrors validator.ValidationErrors
+			errors.As(err, &validationErrors)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   "Validation failed",
+				"details": validationErrors.Error(),
+			})
+		}
+
+		input := user.UpdateUserInput{
+			ID:        id,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+		}
 
 		ctx := context.Background()
 		updatedUser, uuidParseErr := userService.UpdateUser(ctx, input)
@@ -147,7 +158,7 @@ func main() {
 			})
 		}
 
-		return c.JSON(updatedUser)
+		return c.JSON(schemas.NewUserResponse(updatedUser))
 	})
 
 	api.Delete("/users/:id", func(c *fiber.Ctx) error {

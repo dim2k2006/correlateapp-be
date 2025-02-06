@@ -1,6 +1,12 @@
 package schemas
 
-import "github.com/go-playground/validator/v10"
+import (
+	"time"
+
+	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
+	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
+)
 
 type CreateUserRequest struct {
 	ExternalID string `json:"externalId" validate:"required,uuid4"`
@@ -21,4 +27,24 @@ func (r *CreateUserRequest) Validate() error {
 
 func (r *UpdateUserRequest) Validate() error {
 	return validate.Struct(r)
+}
+
+type UserResponse struct {
+	ID         uuid.UUID `json:"id"`
+	ExternalID string    `json:"externalId"`
+	FirstName  string    `json:"firstName"`
+	LastName   string    `json:"lastName"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
+func NewUserResponse(u *user.User) UserResponse {
+	return UserResponse{
+		ID:         u.ID,
+		ExternalID: u.ExternalID,
+		FirstName:  u.FirstName,
+		LastName:   u.LastName,
+		CreatedAt:  u.CreatedAt,
+		UpdatedAt:  u.UpdatedAt,
+	}
 }
