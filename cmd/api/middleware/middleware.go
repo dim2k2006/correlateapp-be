@@ -41,6 +41,11 @@ func VerifySignatureMiddleware(secretKeys []string) fiber.Handler {
 
 		// Get the request body
 		payload := string(c.Body())
+		if c.Method() == fiber.MethodGet || c.Method() == fiber.MethodDelete {
+			if len(payload) == 0 { // Only override if there's no body
+				payload = "" // Ensure an empty payload for GET & DELETE without a body
+			}
+		}
 
 		// Check if the signature matches any of the provided API keys
 		for _, key := range secretKeys {
