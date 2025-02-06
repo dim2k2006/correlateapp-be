@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +12,10 @@ type serviceImpl struct {
 	repo Repository
 }
 
+var (
+	ErrDuplicateExternalID = errors.New("duplicate external ID")
+)
+
 func NewService(repo Repository) Service {
 	return &serviceImpl{
 		repo: repo,
@@ -18,7 +23,13 @@ func NewService(repo Repository) Service {
 }
 
 func (s *serviceImpl) CreateUser(ctx context.Context, input CreateUserInput) (*User, error) {
-	user := &User{
+	user, err := s.repo.GetUserByExternalID(ctx, input.ExternalID)
+
+	if user != nil {
+		return nil, ErrDuplicateExternalID
+	}
+
+	newUser := &User{
 		ID:         uuid.New(),
 		ExternalID: input.ExternalID,
 		FirstName:  input.FirstName,
@@ -27,7 +38,7 @@ func (s *serviceImpl) CreateUser(ctx context.Context, input CreateUserInput) (*U
 		UpdatedAt:  time.Now(),
 	}
 
-	createdUser, err := s.repo.CreateUser(ctx, user)
+	createdUser, err := s.repo.CreateUser(ctx, newUser)
 	if err != nil {
 		return nil, err
 	}

@@ -27,3 +27,20 @@ func TestService_CreateUser(t *testing.T) {
 	assert.Equal(t, input.FirstName, createdUser.FirstName)
 	assert.Equal(t, input.LastName, createdUser.LastName)
 }
+
+func TestService_CreateUser_DuplicateExternalID(t *testing.T) {
+	repo := user.NewInMemoryRepository()
+	svc := user.NewService(repo)
+
+	input := user.CreateUserInput{
+		ExternalID: "b6541d6a-7987-42ce-b124-018667a76bd5",
+		FirstName:  "John",
+		LastName:   "Doe",
+	}
+
+	_, err := svc.CreateUser(context.Background(), input)
+	require.NoError(t, err)
+
+	_, err = svc.CreateUser(context.Background(), input)
+	require.Error(t, err)
+}
