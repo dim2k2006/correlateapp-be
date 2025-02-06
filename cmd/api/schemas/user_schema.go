@@ -19,14 +19,16 @@ type UpdateUserRequest struct {
 	LastName  string `json:"lastName,omitempty"`
 }
 
-var validate = validator.New()
+func getValidator() *validator.Validate {
+	return validator.New()
+}
 
 func (r *CreateUserRequest) Validate() error {
-	return validate.Struct(r)
+	return getValidator().Struct(r)
 }
 
 func (r *UpdateUserRequest) Validate() error {
-	return validate.Struct(r)
+	return getValidator().Struct(r)
 }
 
 type UserResponse struct {
