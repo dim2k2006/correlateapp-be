@@ -425,6 +425,26 @@ func main() {
 		return c.JSON(response)
 	})
 
+	measurements.Delete("/:id", func(c *fiber.Ctx) error {
+		idStr := c.Params("id")
+		id, uuidParseErr := uuid.Parse(idStr)
+		if uuidParseErr != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid measurement ID",
+			})
+		}
+
+		ctx := context.Background()
+		if err := measurementService.DeleteMeasurement(ctx, id); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		// Return no content status upon successful deletion.
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
 	log.Println("Starting server on " + port)
 
 	if err := app.Listen(":" + port); err != nil {
