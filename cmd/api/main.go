@@ -19,6 +19,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+//nolint:gocyclo // It is fine to keep all routes in one place for now
 func main() {
 	// Load environment variables
 	dotEnvErr := godotenv.Load()
