@@ -9,10 +9,9 @@ import (
 )
 
 type CreateMeasurementRequest struct {
-	Type        measurement.Type `json:"type" validate:"required,oneof=float"`
-	ParameterID uuid.UUID        `json:"parameterId" validate:"required,uuid4"`
-	Notes       string           `json:"notes,omitempty" validate:"omitempty"`
-	Value       interface{}      `json:"value" validate:"required,min=1"`
+	ParameterID uuid.UUID   `json:"parameterId" validate:"required,uuid4"`
+	Notes       string      `json:"notes,omitempty" validate:"omitempty"`
+	Value       interface{} `json:"value" validate:"required,min=1"`
 }
 
 func getMeasurementRequestValidator() *validator.Validate {

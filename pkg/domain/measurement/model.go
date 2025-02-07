@@ -6,15 +6,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type Type string
+type DataType string
 
 const (
-	MeasurementTypeFloat Type = "float"
+	DataTypeFloat DataType = "float"
 	// MeasurementTypeBoolean MeasurementType = "boolean".
 )
 
 type BaseMeasurement struct {
-	Type        Type
+	Type        DataType
 	ID          uuid.UUID
 	UserID      uuid.UUID
 	ParameterID uuid.UUID
@@ -41,7 +41,7 @@ func (fm *FloatMeasurement) GetParameterID() uuid.UUID {
 	return fm.ParameterID
 }
 
-func (fm *FloatMeasurement) GetType() Type {
+func (fm *FloatMeasurement) GetType() DataType {
 	return fm.Type
 }
 
@@ -82,7 +82,7 @@ func (bm *BooleanMeasurement) GetParameterID() uuid.UUID {
 	return bm.ParameterID
 }
 
-func (bm *BooleanMeasurement) GetType() Type {
+func (bm *BooleanMeasurement) GetType() DataType {
 	return bm.Type
 }
 
@@ -110,7 +110,7 @@ type Measurement interface {
 	GetID() uuid.UUID
 	GetUserID() uuid.UUID
 	GetParameterID() uuid.UUID
-	GetType() Type
+	GetType() DataType
 	GetTimestamp() time.Time
 	GetNotes() string
 	SetID(uuid.UUID)

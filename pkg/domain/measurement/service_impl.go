@@ -28,15 +28,17 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 		return nil, err
 	}
 
-	switch input.Type {
-	case MeasurementTypeFloat:
+	measurementParameterType := measurementParameter.DataType
+
+	switch measurementParameterType {
+	case parameter.DataType(DataTypeFloat):
 		v, ok := input.Value.(float64)
 		if !ok {
 			return nil, errors.New("invalid value type for float measurement")
 		}
 		measurement := &FloatMeasurement{
 			BaseMeasurement: BaseMeasurement{
-				Type:        MeasurementTypeFloat,
+				Type:        DataTypeFloat,
 				ID:          uuid.New(),
 				UserID:      measurementParameter.UserID,
 				ParameterID: measurementParameter.ID,
@@ -69,7 +71,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 	//	}
 	//	return s.repo.CreateMeasurement(ctx, meas)
 	default:
-		return nil, fmt.Errorf("unsupported measurement type: %s", input.Type)
+		return nil, fmt.Errorf("unsupported measurement type: %s", measurementParameterType)
 	}
 }
 
