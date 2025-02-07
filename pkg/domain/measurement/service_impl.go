@@ -38,12 +38,12 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 			BaseMeasurement: BaseMeasurement{
 				Type:        MeasurementTypeFloat,
 				ID:          uuid.New(),
-				UserID:      input.UserID,
+				UserID:      measurementParameter.UserID,
 				ParameterID: measurementParameter.ID,
-				Timestamp:   time.Now(),
+				Timestamp:   time.Now().UTC(),
 				Notes:       input.Notes,
-				CreatedAt:   time.Now(),
-				UpdatedAt:   time.Now(),
+				CreatedAt:   time.Now().UTC(),
+				UpdatedAt:   time.Now().UTC(),
 			},
 			Value: v,
 		}

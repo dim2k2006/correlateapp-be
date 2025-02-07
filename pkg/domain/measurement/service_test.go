@@ -3,7 +3,6 @@ package measurement_test
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/measurement"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
@@ -34,7 +33,6 @@ func TestCreateMeasurement_Success(t *testing.T) {
 
 	measurementInput := measurement.CreateMeasurementInput{
 		Type:        measurement.MeasurementTypeFloat,
-		UserID:      uuid.UUID{},
 		ParameterID: createdParam.ID,
 		Notes:       "Test Notes",
 		Value:       25.5,
@@ -74,11 +72,9 @@ func TestCreateMeasurement_InvalidValueType_ForFloatMeasurement(t *testing.T) {
 
 	measurementInput := measurement.CreateMeasurementInput{
 		Type:        measurement.MeasurementTypeFloat,
-		UserID:      createdParam.UserID,
 		ParameterID: createdParam.ID,
 		Notes:       "Invalid value type",
 		Value:       "not a float", // Invalid value type for float measurement
-		Timestamp:   time.Now().UTC(),
 	}
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
@@ -99,11 +95,9 @@ func TestCreateMeasurement_ParameterNotFound_ForFloatMeasurement(t *testing.T) {
 
 	measurementInput := measurement.CreateMeasurementInput{
 		Type:        measurement.MeasurementTypeFloat,
-		UserID:      uuid.New(),
 		ParameterID: nonExistentParamID,
 		Notes:       "Parameter does not exist",
 		Value:       25.0,
-		Timestamp:   time.Now().UTC(),
 	}
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
@@ -134,11 +128,9 @@ func TestCreateMeasurement_UnsupportedType_ForFloatMeasurement(t *testing.T) {
 
 	measurementInput := measurement.CreateMeasurementInput{
 		Type:        "category", // unsupported measurement type
-		UserID:      createdParam.UserID,
 		ParameterID: createdParam.ID,
 		Notes:       "Unsupported measurement type",
 		Value:       "high",
-		Timestamp:   time.Now().UTC(),
 	}
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)

@@ -15,7 +15,6 @@ type Service interface {
 
 type CreateMeasurementInput struct {
 	Type        Type
-	UserID      uuid.UUID
 	ParameterID uuid.UUID
 	Notes       string
 	Value       interface{}

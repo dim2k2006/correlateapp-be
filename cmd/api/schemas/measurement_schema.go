@@ -10,7 +10,6 @@ import (
 
 type CreateMeasurementRequest struct {
 	Type        measurement.Type `json:"type" validate:"required,oneof=float"`
-	UserID      uuid.UUID        `json:"userId" validate:"required,uuid4"`
 	ParameterID uuid.UUID        `json:"parameterId" validate:"required,uuid4"`
 	Notes       string           `json:"notes,omitempty" validate:"omitempty"`
 	Value       interface{}      `json:"value" validate:"required,min=1"`
