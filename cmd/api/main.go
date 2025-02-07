@@ -10,6 +10,7 @@ import (
 
 	"github.com/dim2k2006/correlateapp-be/cmd/api/middleware"
 	"github.com/dim2k2006/correlateapp-be/cmd/api/schemas"
+	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -42,6 +43,9 @@ func main() {
 	userRepository := user.NewInMemoryRepository()
 	userService := user.NewService(userRepository)
 
+	parameterRepository := parameter.NewInMemoryRepository()
+	parameterService := parameter.NewService(parameterRepository)
+
 	app := fiber.New()
 
 	app.Get("/health", func(c *fiber.Ctx) error {
@@ -52,7 +56,9 @@ func main() {
 
 	api := app.Group("/api", middleware.VerifySignatureMiddleware(secretKeys))
 
-	api.Post("/users", func(c *fiber.Ctx) error {
+	users := api.Group("/users")
+
+	users.Post("/", func(c *fiber.Ctx) error {
 		var req schemas.CreateUserRequest
 
 		if err := c.BodyParser(&req); err != nil {
@@ -87,7 +93,7 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(schemas.NewUserResponse(createdUser))
 	})
 
-	api.Get("/users/:id", func(c *fiber.Ctx) error {
+	users.Get("/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, err := uuid.Parse(idStr)
 		if err != nil {
@@ -107,7 +113,7 @@ func main() {
 		return c.JSON(schemas.NewUserResponse(userData))
 	})
 
-	api.Get("/users/external/:externalId", func(c *fiber.Ctx) error {
+	users.Get("/external/:externalId", func(c *fiber.Ctx) error {
 		externalID := c.Params("externalId")
 		ctx := context.Background()
 		userData, err := userService.GetUserByExternalID(ctx, externalID)
@@ -119,7 +125,7 @@ func main() {
 		return c.JSON(schemas.NewUserResponse(userData))
 	})
 
-	api.Put("/users/:id", func(c *fiber.Ctx) error {
+	users.Put("/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, uuidParseErr := uuid.Parse(idStr)
 		if uuidParseErr != nil {
@@ -161,7 +167,7 @@ func main() {
 		return c.JSON(schemas.NewUserResponse(updatedUser))
 	})
 
-	api.Delete("/users/:id", func(c *fiber.Ctx) error {
+	users.Delete("/:id", func(c *fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, uuidParseErr := uuid.Parse(idStr)
 		if uuidParseErr != nil {
@@ -180,6 +186,47 @@ func main() {
 		// Return no content status upon successful deletion.
 		return c.SendStatus(fiber.StatusNoContent)
 	})
+
+	parameters := api.Group("/parameters")
+
+	parameters.Post("/", func(c *fiber.Ctx) error {
+		var req schemas.CreateParameterInput
+
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid input: " + err.Error(),
+			})
+		}
+
+		if err := req.Validate(); err != nil {
+			var validationErrors validator.ValidationErrors
+			errors.As(err, &validationErrors)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   "Validation failed",
+				"details": validationErrors.Error(),
+			})
+		}
+
+		input := parameter.CreateParameterInput{
+			UserID:      req.UserID,
+			Name:        req.Name,
+			Description: req.Description,
+			DataType:    req.DataType,
+			Unit:        req.Unit,
+		}
+
+		ctx := context.Background()
+		createdParameter, err := parameterService.CreateParameter(ctx, input)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(schemas.NewParameterResponse(createdParameter))
+	})
+
+	// TODO implement routes for measurements
 
 	log.Println("Starting server on " + port)
 
