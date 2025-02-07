@@ -157,10 +157,10 @@ func main() {
 		}
 
 		ctx := context.Background()
-		updatedUser, uuidParseErr := userService.UpdateUser(ctx, input)
-		if uuidParseErr != nil {
+		updatedUser, updateUserErr := userService.UpdateUser(ctx, input)
+		if updateUserErr != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": uuidParseErr.Error(),
+				"error": updateUserErr.Error(),
 			})
 		}
 
