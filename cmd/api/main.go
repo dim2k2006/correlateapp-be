@@ -226,6 +226,26 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(schemas.NewParameterResponse(createdParameter))
 	})
 
+	parameters.Get("/:id", func(c *fiber.Ctx) error {
+		idStr := c.Params("id")
+		id, err := uuid.Parse(idStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid parameter ID",
+			})
+		}
+
+		ctx := context.Background()
+		parameterData, err := parameterService.GetParameterByID(ctx, id)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		return c.JSON(schemas.NewParameterResponse(parameterData))
+	})
+
 	// TODO implement routes for measurements
 
 	log.Println("Starting server on " + port)
