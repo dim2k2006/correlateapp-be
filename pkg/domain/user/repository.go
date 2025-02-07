@@ -2,8 +2,13 @@ package user
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
+)
+
+var (
+	ErrUserNotFound = errors.New("user not found")
 )
 
 type Repository interface {
