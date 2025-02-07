@@ -246,6 +246,31 @@ func main() {
 		return c.JSON(schemas.NewParameterResponse(parameterData))
 	})
 
+	parameters.Get("/user/:userId", func(c *fiber.Ctx) error {
+		userIDStr := c.Params("userId")
+		userId, err := uuid.Parse(userIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid user ID",
+			})
+		}
+
+		ctx := context.Background()
+		parametersData, err := parameterService.ListParametersByUser(ctx, userId)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		var response []schemas.ParameterResponse
+		for _, p := range parametersData {
+			response = append(response, schemas.NewParameterResponse(p))
+		}
+
+		return c.JSON(response)
+	})
+
 	// TODO implement routes for measurements
 
 	log.Println("Starting server on " + port)
