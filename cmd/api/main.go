@@ -42,6 +42,13 @@ func main() {
 		log.Fatal("API_SECRET_KEYS is empty")
 	}
 
+	appEnv := os.Getenv("APP_ENV")
+	if appEnv == "" {
+		log.Fatal("APP_ENV is empty")
+	}
+
+	isProduction := appEnv == "production"
+
 	userRepository := user.NewInMemoryRepository()
 	userService := user.NewService(userRepository)
 
@@ -59,7 +66,11 @@ func main() {
 		return c.SendString("It is alive 🔥🔥🔥. Now: " + now.Format(time.RFC3339))
 	})
 
-	api := app.Group("/api", middleware.VerifySignatureMiddleware(secretKeys))
+	api := app.Group("/api")
+
+	if isProduction {
+		api.Use(middleware.VerifySignatureMiddleware(secretKeys))
+	}
 
 	users := api.Group("/users")
 
