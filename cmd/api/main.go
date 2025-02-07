@@ -5,7 +5,9 @@ import (
 	"errors"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/dim2k2006/correlateapp-be/cmd/api/middleware"
@@ -15,6 +17,7 @@ import (
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -59,6 +62,8 @@ func main() {
 	measurementService := measurement.NewService(measurementRepository, parameterService)
 
 	app := fiber.New()
+
+	app.Use(recover.New())
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		now := time.Now()
@@ -457,9 +462,27 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
-	log.Println("Starting server on " + port)
+	// -------------------------
+	// Start the server in a goroutine
+	// -------------------------
+	log.Println("Starting server on port", port)
+	go func() {
+		if err := app.Listen(":" + port); err != nil {
+			// If Listen fails, we log and send a signal, or exit
+			log.Fatalf("could not start server: %v", err)
+		}
+	}()
 
-	if err := app.Listen(":" + port); err != nil {
-		log.Fatalf("could not start server: %v", err)
+	// -------------------------
+	// Listen for kill signals (graceful shutdown)
+	// -------------------------
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit // Block until we get a signal
+
+	log.Println("Gracefully shutting down server...")
+	if err := app.Shutdown(); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
+	log.Println("Server exiting")
 }
