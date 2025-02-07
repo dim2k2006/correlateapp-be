@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateParameterInput struct {
+type CreateParameterRequest struct {
 	UserID      uuid.UUID          `json:"userId" validate:"required,uuid4"`
 	Name        string             `json:"name" validate:"required,min=2,max=100"`
 	Description string             `json:"description,omitempty"`
@@ -16,7 +16,7 @@ type CreateParameterInput struct {
 	Unit        string             `json:"unit,omitempty"`
 }
 
-type UpdateParameterInput struct {
+type UpdateParameterRequest struct {
 	ID          uuid.UUID          `json:"id" validate:"required, uuid4"`
 	Name        string             `json:"name" validate:"required,min=2,max=100"`
 	Description string             `json:"description,omitempty"`
@@ -28,11 +28,11 @@ func getParameterRequestValidator() *validator.Validate {
 	return validator.New()
 }
 
-func (r *CreateParameterInput) Validate() error {
+func (r *CreateParameterRequest) Validate() error {
 	return getParameterRequestValidator().Struct(r)
 }
 
-func (r *UpdateParameterInput) Validate() error {
+func (r *UpdateParameterRequest) Validate() error {
 	return getParameterRequestValidator().Struct(r)
 }
 

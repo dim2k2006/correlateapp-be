@@ -190,7 +190,7 @@ func main() {
 	parameters := api.Group("/parameters")
 
 	parameters.Post("/", func(c *fiber.Ctx) error {
-		var req schemas.CreateParameterInput
+		var req schemas.CreateParameterRequest
 
 		if err := c.BodyParser(&req); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -248,7 +248,7 @@ func main() {
 
 	parameters.Get("/user/:userId", func(c *fiber.Ctx) error {
 		userIDStr := c.Params("userId")
-		userId, err := uuid.Parse(userIDStr)
+		userID, err := uuid.Parse(userIDStr)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Invalid user ID",
@@ -256,7 +256,7 @@ func main() {
 		}
 
 		ctx := context.Background()
-		parametersData, err := parameterService.ListParametersByUser(ctx, userId)
+		parametersData, err := parameterService.ListParametersByUser(ctx, userID)
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": err.Error(),
@@ -269,6 +269,50 @@ func main() {
 		}
 
 		return c.JSON(response)
+	})
+
+	parameters.Put("/:id", func(c *fiber.Ctx) error {
+		idStr := c.Params("id")
+		id, uuidParseErr := uuid.Parse(idStr)
+		if uuidParseErr != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid parameter ID",
+			})
+		}
+
+		var req schemas.UpdateParameterRequest
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid input: " + err.Error(),
+			})
+		}
+
+		if err := req.Validate(); err != nil {
+			var validationErrors validator.ValidationErrors
+			errors.As(err, &validationErrors)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   "Validation failed",
+				"details": validationErrors.Error(),
+			})
+		}
+
+		input := parameter.UpdateParameterInput{
+			ID:          id,
+			Name:        req.Name,
+			Description: req.Description,
+			DataType:    req.DataType,
+			Unit:        req.Unit,
+		}
+
+		ctx := context.Background()
+		updatedParameter, updateParameterErr := parameterService.UpdateParameter(ctx, input)
+		if updateParameterErr != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": updateParameterErr.Error(),
+			})
+		}
+
+		return c.JSON(schemas.NewParameterResponse(updatedParameter))
 	})
 
 	// TODO implement routes for measurements
