@@ -375,6 +375,31 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(schemas.NewMeasurementResponse(createdMeasurement))
 	})
 
+	measurements.Get("/user/:userId", func(c *fiber.Ctx) error {
+		userIDStr := c.Params("userId")
+		userID, err := uuid.Parse(userIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid user ID",
+			})
+		}
+
+		ctx := context.Background()
+		measurementsData, err := measurementService.ListMeasurementsByUser(ctx, userID)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		var response []schemas.MeasurementResponse
+		for _, measurementItem := range measurementsData {
+			response = append(response, schemas.NewMeasurementResponse(measurementItem))
+		}
+
+		return c.JSON(response)
+	})
+
 	log.Println("Starting server on " + port)
 
 	if err := app.Listen(":" + port); err != nil {
