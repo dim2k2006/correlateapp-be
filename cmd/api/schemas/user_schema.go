@@ -15,8 +15,8 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-	FirstName string `json:"firstName,omitempty"`
-	LastName  string `json:"lastName,omitempty"`
+	FirstName *string `json:"firstName,omitempty" validate:"omitempty,min=2,max=50"`
+	LastName  *string `json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`
 }
 
 func getUserRequestValidator() *validator.Validate {

@@ -22,6 +22,6 @@ type CreateUserInput struct {
 
 type UpdateUserInput struct {
 	ID        uuid.UUID
-	FirstName string
-	LastName  string
+	FirstName *string
+	LastName  *string
 }

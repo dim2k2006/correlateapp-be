@@ -73,11 +73,11 @@ func (s *serviceImpl) UpdateUser(ctx context.Context, input UpdateUserInput) (*U
 		return nil, err
 	}
 
-	if input.FirstName != "" {
-		user.FirstName = input.FirstName
+	if input.FirstName != nil {
+		user.FirstName = *input.FirstName
 	}
-	if input.LastName != "" {
-		user.LastName = input.LastName
+	if input.LastName != nil {
+		user.LastName = *input.LastName
 	}
 
 	user.UpdatedAt = time.Now()
