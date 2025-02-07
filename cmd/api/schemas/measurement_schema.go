@@ -37,8 +37,8 @@ type MeasurementResponse struct {
 func NewMeasurementResponse(m measurement.Measurement) MeasurementResponse {
 	switch m.GetType() {
 	case measurement.DataTypeFloat:
-		floatMeasurement, err := m.(*measurement.FloatMeasurement)
-		if err {
+		floatMeasurement, ok := m.(*measurement.FloatMeasurement)
+		if !ok {
 			return MeasurementResponse{}
 		}
 
