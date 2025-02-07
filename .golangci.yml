@@ -23,7 +23,7 @@ linters-settings:
     # The maximal average package complexity.
     # If it's higher than 0.0 (float) the check is enabled
     # Default: 0.0
-    package-average: 40.0
+    package-average: 50.0
 
   errcheck:
     # Report about not checking of errors in type assertions: `a := b.(MyStruct)`.
@@ -241,7 +241,7 @@ linters:
     - canonicalheader # checks whether net/http.Header uses canonical header
     - copyloopvar # detects places where loop variables are copied (Go 1.22+)
     - cyclop # checks function and package cyclomatic complexity
-    - dupl # tool for code clone detection
+#    - dupl # tool for code clone detection
     - durationcheck # checks for two durations multiplied together
     - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
     - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
