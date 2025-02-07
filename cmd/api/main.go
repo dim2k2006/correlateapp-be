@@ -10,6 +10,7 @@ import (
 
 	"github.com/dim2k2006/correlateapp-be/cmd/api/middleware"
 	"github.com/dim2k2006/correlateapp-be/cmd/api/schemas"
+	"github.com/dim2k2006/correlateapp-be/pkg/domain/measurement"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
 	"github.com/go-playground/validator/v10"
@@ -45,6 +46,9 @@ func main() {
 
 	parameterRepository := parameter.NewInMemoryRepository()
 	parameterService := parameter.NewService(parameterRepository)
+
+	measurementRepository := measurement.NewInMemoryRepository()
+	measurementService := measurement.NewService(measurementRepository, parameterService)
 
 	app := fiber.New()
 
@@ -334,7 +338,42 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
-	// TODO implement routes for measurements
+	measurements := api.Group("/measurements")
+
+	measurements.Post("/", func(c *fiber.Ctx) error {
+		var req schemas.CreateMeasurementRequest
+
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid input: " + err.Error(),
+			})
+		}
+
+		if err := req.Validate(); err != nil {
+			var validationErrors validator.ValidationErrors
+			errors.As(err, &validationErrors)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   "Validation failed",
+				"details": validationErrors.Error(),
+			})
+		}
+
+		input := measurement.CreateMeasurementInput{
+			ParameterID: req.ParameterID,
+			Notes:       req.Notes,
+			Value:       req.Value,
+		}
+
+		ctx := context.Background()
+		createdMeasurement, err := measurementService.CreateMeasurement(ctx, input)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(schemas.NewMeasurementResponse(createdMeasurement))
+	})
 
 	log.Println("Starting server on " + port)
 

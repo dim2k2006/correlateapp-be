@@ -65,6 +65,14 @@ func (fm *FloatMeasurement) SetUpdatedAt(t time.Time) {
 	fm.UpdatedAt = t
 }
 
+func (fm *FloatMeasurement) GetCreatedAt() time.Time {
+	return fm.CreatedAt
+}
+
+func (fm *FloatMeasurement) GetUpdatedAt() time.Time {
+	return fm.UpdatedAt
+}
+
 type BooleanMeasurement struct {
 	BaseMeasurement
 	Value bool `json:"value"` // Boolean-specific field
@@ -106,6 +114,14 @@ func (bm *BooleanMeasurement) SetUpdatedAt(t time.Time) {
 	bm.UpdatedAt = t
 }
 
+func (bm *BooleanMeasurement) GetCreatedAt() time.Time {
+	return bm.CreatedAt
+}
+
+func (bm *BooleanMeasurement) GetUpdatedAt() time.Time {
+	return bm.UpdatedAt
+}
+
 type Measurement interface {
 	GetID() uuid.UUID
 	GetUserID() uuid.UUID
@@ -116,4 +132,6 @@ type Measurement interface {
 	SetID(uuid.UUID)
 	SetCreatedAt(time.Time)
 	SetUpdatedAt(time.Time)
+	GetCreatedAt() time.Time
+	GetUpdatedAt() time.Time
 }

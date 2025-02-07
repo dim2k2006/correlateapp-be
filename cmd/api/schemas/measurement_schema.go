@@ -23,25 +23,25 @@ func (r *CreateMeasurementRequest) Validate() error {
 }
 
 type MeasurementResponse struct {
-	ID          uuid.UUID        `json:"id"`
-	Type        measurement.Type `json:"type"`
-	UserID      uuid.UUID        `json:"userId"`
-	ParameterID uuid.UUID        `json:"parameterId"`
-	Timestamp   time.Time        `json:"timestamp"`
-	Notes       string           `json:"notes,omitempty"`
-	CreatedAt   time.Time        `json:"createdAt"`
-	UpdatedAt   time.Time        `json:"updatedAt"`
+	ID          uuid.UUID            `json:"id"`
+	Type        measurement.DataType `json:"type"`
+	UserID      uuid.UUID            `json:"userId"`
+	ParameterID uuid.UUID            `json:"parameterId"`
+	Timestamp   time.Time            `json:"timestamp"`
+	Notes       string               `json:"notes,omitempty"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	UpdatedAt   time.Time            `json:"updatedAt"`
 }
 
-func NewMeasurementResponse(m *measurement.FloatMeasurement) MeasurementResponse {
+func NewMeasurementResponse(m measurement.Measurement) MeasurementResponse {
 	return MeasurementResponse{
-		ID:          m.ID,
-		Type:        m.Type,
-		UserID:      m.UserID,
-		ParameterID: m.ParameterID,
-		Timestamp:   m.Timestamp,
-		Notes:       m.Notes,
-		CreatedAt:   m.CreatedAt,
-		UpdatedAt:   m.UpdatedAt,
+		ID:          m.GetID(),
+		Type:        m.GetType(),
+		UserID:      m.GetUserID(),
+		ParameterID: m.GetParameterID(),
+		Timestamp:   m.GetTimestamp(),
+		Notes:       m.GetNotes(),
+		CreatedAt:   m.GetCreatedAt(),
+		UpdatedAt:   m.GetUpdatedAt(),
 	}
 }
