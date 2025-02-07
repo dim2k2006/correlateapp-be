@@ -9,6 +9,7 @@
 /build/
 /bin/
 /dist/
+/cmd/generator/
 
 # Dependency directories (for vendoring)
 vendor/

@@ -15,17 +15,16 @@ type Service interface {
 }
 
 type CreateParameterInput struct {
-	UserID      uuid.UUID `json:"userId" validate:"required"`
-	Name        string    `json:"name" validate:"required"`
-	Description string    `json:"description,omitempty"`
-	DataType    DataType  `json:"dataType" validate:"required,oneof=float"`
-	Unit        string    `json:"unit,omitempty"`
+	UserID      uuid.UUID
+	Name        string
+	Description string
+	DataType    DataType
+	Unit        string
 }
 
 type UpdateParameterInput struct {
-	ID          uuid.UUID `json:"id" validate:"required"`
-	Name        string    `json:"name,omitempty" validate:"omitempty"`
-	Description string    `json:"description,omitempty"`
-	DataType    DataType  `json:"dataType,omitempty" validate:"omitempty,oneof=float"`
-	Unit        string    `json:"unit,omitempty"`
+	ID          uuid.UUID
+	Name        *string
+	Description *string
+	Unit        *string
 }

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +12,10 @@ type serviceImpl struct {
 	repo Repository
 }
 
+var (
+	ErrDuplicateExternalID = errors.New("duplicate external ID")
+)
+
 func NewService(repo Repository) Service {
 	return &serviceImpl{
 		repo: repo,
@@ -18,7 +23,16 @@ func NewService(repo Repository) Service {
 }
 
 func (s *serviceImpl) CreateUser(ctx context.Context, input CreateUserInput) (*User, error) {
-	user := &User{
+	user, err := s.repo.GetUserByExternalID(ctx, input.ExternalID)
+	if err != nil && !errors.Is(err, ErrUserNotFound) {
+		return nil, err
+	}
+
+	if user != nil {
+		return nil, ErrDuplicateExternalID
+	}
+
+	newUser := &User{
 		ID:         uuid.New(),
 		ExternalID: input.ExternalID,
 		FirstName:  input.FirstName,
@@ -27,7 +41,7 @@ func (s *serviceImpl) CreateUser(ctx context.Context, input CreateUserInput) (*U
 		UpdatedAt:  time.Now(),
 	}
 
-	createdUser, err := s.repo.CreateUser(ctx, user)
+	createdUser, err := s.repo.CreateUser(ctx, newUser)
 	if err != nil {
 		return nil, err
 	}
@@ -59,11 +73,11 @@ func (s *serviceImpl) UpdateUser(ctx context.Context, input UpdateUserInput) (*U
 		return nil, err
 	}
 
-	if input.FirstName != "" {
-		user.FirstName = input.FirstName
+	if input.FirstName != nil {
+		user.FirstName = *input.FirstName
 	}
-	if input.LastName != "" {
-		user.LastName = input.LastName
+	if input.LastName != nil {
+		user.LastName = *input.LastName
 	}
 
 	user.UpdatedAt = time.Now()

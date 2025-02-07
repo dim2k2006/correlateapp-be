@@ -6,22 +6,22 @@ import (
 	"github.com/google/uuid"
 )
 
-type Type string
+type DataType string
 
 const (
-	MeasurementTypeFloat Type = "float"
+	DataTypeFloat DataType = "float"
 	// MeasurementTypeBoolean MeasurementType = "boolean".
 )
 
 type BaseMeasurement struct {
-	Type        Type      `json:"type"`
-	ID          uuid.UUID `json:"id"`
-	UserID      uuid.UUID `json:"userId"`
-	ParameterID uuid.UUID `json:"parameterId"`
-	Timestamp   time.Time `json:"timestamp"`
-	Notes       string    `json:"notes,omitempty"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Type        DataType
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	ParameterID uuid.UUID
+	Timestamp   time.Time
+	Notes       string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type FloatMeasurement struct {
@@ -41,7 +41,7 @@ func (fm *FloatMeasurement) GetParameterID() uuid.UUID {
 	return fm.ParameterID
 }
 
-func (fm *FloatMeasurement) GetType() Type {
+func (fm *FloatMeasurement) GetType() DataType {
 	return fm.Type
 }
 
@@ -65,6 +65,18 @@ func (fm *FloatMeasurement) SetUpdatedAt(t time.Time) {
 	fm.UpdatedAt = t
 }
 
+func (fm *FloatMeasurement) GetCreatedAt() time.Time {
+	return fm.CreatedAt
+}
+
+func (fm *FloatMeasurement) GetUpdatedAt() time.Time {
+	return fm.UpdatedAt
+}
+
+func (fm *FloatMeasurement) GetValue() float64 {
+	return fm.Value
+}
+
 type BooleanMeasurement struct {
 	BaseMeasurement
 	Value bool `json:"value"` // Boolean-specific field
@@ -82,7 +94,7 @@ func (bm *BooleanMeasurement) GetParameterID() uuid.UUID {
 	return bm.ParameterID
 }
 
-func (bm *BooleanMeasurement) GetType() Type {
+func (bm *BooleanMeasurement) GetType() DataType {
 	return bm.Type
 }
 
@@ -106,14 +118,28 @@ func (bm *BooleanMeasurement) SetUpdatedAt(t time.Time) {
 	bm.UpdatedAt = t
 }
 
+func (bm *BooleanMeasurement) GetCreatedAt() time.Time {
+	return bm.CreatedAt
+}
+
+func (bm *BooleanMeasurement) GetUpdatedAt() time.Time {
+	return bm.UpdatedAt
+}
+
+func (bm *BooleanMeasurement) GetValue() bool {
+	return bm.Value
+}
+
 type Measurement interface {
 	GetID() uuid.UUID
 	GetUserID() uuid.UUID
 	GetParameterID() uuid.UUID
-	GetType() Type
+	GetType() DataType
 	GetTimestamp() time.Time
 	GetNotes() string
 	SetID(uuid.UUID)
 	SetCreatedAt(time.Time)
 	SetUpdatedAt(time.Time)
+	GetCreatedAt() time.Time
+	GetUpdatedAt() time.Time
 }

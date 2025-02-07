@@ -16,12 +16,12 @@ const (
 )
 
 type Parameter struct {
-	ID          uuid.UUID `json:"id"`
-	UserID      uuid.UUID `json:"userId"`
-	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
-	DataType    DataType  `json:"dataType"`
-	Unit        string    `json:"unit,omitempty"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	Name        string
+	Description string
+	DataType    DataType
+	Unit        string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

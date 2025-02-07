@@ -2,7 +2,6 @@ package measurement
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -15,10 +14,7 @@ type Service interface {
 }
 
 type CreateMeasurementInput struct {
-	Type        Type        `json:"type"`
-	UserID      uuid.UUID   `json:"userId"`
-	ParameterID uuid.UUID   `json:"parameterId"`
-	Timestamp   time.Time   `json:"timestamp,omitempty"`
-	Notes       string      `json:"notes,omitempty"`
-	Value       interface{} `json:"value"`
+	ParameterID uuid.UUID
+	Notes       string
+	Value       interface{}
 }

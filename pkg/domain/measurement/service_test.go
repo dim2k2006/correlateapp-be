@@ -3,7 +3,6 @@ package measurement_test
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/measurement"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
@@ -33,8 +32,6 @@ func TestCreateMeasurement_Success(t *testing.T) {
 	assert.NotNil(t, createdParam)
 
 	measurementInput := measurement.CreateMeasurementInput{
-		Type:        measurement.MeasurementTypeFloat,
-		UserID:      uuid.UUID{},
 		ParameterID: createdParam.ID,
 		Notes:       "Test Notes",
 		Value:       25.5,
@@ -48,7 +45,7 @@ func TestCreateMeasurement_Success(t *testing.T) {
 	floatMeas, ok := createdMeasurement.(*measurement.FloatMeasurement)
 	assert.True(t, ok)
 	assert.InEpsilon(t, 25.5, floatMeas.Value, 0.0001)
-	assert.Equal(t, measurement.MeasurementTypeFloat, floatMeas.Type)
+	assert.Equal(t, measurement.DataTypeFloat, floatMeas.Type)
 	assert.Equal(t, createdParam.ID, floatMeas.ParameterID)
 	assert.Equal(t, createdParam.UserID, floatMeas.UserID)
 }
@@ -73,12 +70,9 @@ func TestCreateMeasurement_InvalidValueType_ForFloatMeasurement(t *testing.T) {
 	require.NotNil(t, createdParam)
 
 	measurementInput := measurement.CreateMeasurementInput{
-		Type:        measurement.MeasurementTypeFloat,
-		UserID:      createdParam.UserID,
 		ParameterID: createdParam.ID,
 		Notes:       "Invalid value type",
 		Value:       "not a float", // Invalid value type for float measurement
-		Timestamp:   time.Now().UTC(),
 	}
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
@@ -98,12 +92,9 @@ func TestCreateMeasurement_ParameterNotFound_ForFloatMeasurement(t *testing.T) {
 	nonExistentParamID := uuid.New()
 
 	measurementInput := measurement.CreateMeasurementInput{
-		Type:        measurement.MeasurementTypeFloat,
-		UserID:      uuid.New(),
 		ParameterID: nonExistentParamID,
 		Notes:       "Parameter does not exist",
 		Value:       25.0,
-		Timestamp:   time.Now().UTC(),
 	}
 
 	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
@@ -111,40 +102,6 @@ func TestCreateMeasurement_ParameterNotFound_ForFloatMeasurement(t *testing.T) {
 	require.Error(t, err)
 	assert.Nil(t, createdMeasurement)
 	assert.Contains(t, err.Error(), "parameter not found")
-}
-
-func TestCreateMeasurement_UnsupportedType_ForFloatMeasurement(t *testing.T) {
-	parameterRepository := parameter.NewInMemoryRepository()
-	parameterService := parameter.NewService(parameterRepository)
-
-	measurementRepository := measurement.NewInMemoryRepository()
-	measurementService := measurement.NewService(measurementRepository, parameterService)
-
-	parameterInput := parameter.CreateParameterInput{
-		UserID:      uuid.New(),
-		Name:        "Temperature",
-		Description: "Ambient temperature in Celsius",
-		DataType:    parameter.DataTypeFloat,
-		Unit:        "Celsius",
-	}
-
-	createdParam, err := parameterService.CreateParameter(context.Background(), parameterInput)
-	require.NoError(t, err)
-	require.NotNil(t, createdParam)
-
-	measurementInput := measurement.CreateMeasurementInput{
-		Type:        "category", // unsupported measurement type
-		UserID:      createdParam.UserID,
-		ParameterID: createdParam.ID,
-		Notes:       "Unsupported measurement type",
-		Value:       "high",
-		Timestamp:   time.Now().UTC(),
-	}
-
-	createdMeasurement, err := measurementService.CreateMeasurement(context.Background(), measurementInput)
-	require.Error(t, err)
-	assert.Nil(t, createdMeasurement)
-	assert.Contains(t, err.Error(), "unsupported measurement type")
 }
 
 // func TestUpdateMeasurement_Failure_TypeMismatch_ForFloatMeasurement(t *testing.T) {
