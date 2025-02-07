@@ -17,7 +17,7 @@ type CreateParameterRequest struct {
 }
 
 type UpdateParameterRequest struct {
-	ID          uuid.UUID          `json:"id" validate:"required, uuid4"`
+	ID          uuid.UUID          `json:"id" validate:"required,uuid4"`
 	Name        string             `json:"name" validate:"required,min=2,max=100"`
 	Description string             `json:"description,omitempty"`
 	DataType    parameter.DataType `json:"dataType,omitempty" validate:"omitempty,oneof=float"`
