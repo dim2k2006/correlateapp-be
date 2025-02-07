@@ -15,6 +15,8 @@ import (
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/measurement"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/parameter"
 	"github.com/dim2k2006/correlateapp-be/pkg/domain/user"
+	"github.com/getsentry/sentry-go"
+	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -50,6 +52,11 @@ func main() {
 		log.Fatal("APP_ENV is empty")
 	}
 
+	sentryDsn := os.Getenv("SENTRY_DSN")
+	if sentryDsn == "" {
+		log.Fatal("SENTRY_DSN is empty")
+	}
+
 	isProduction := appEnv == "production"
 
 	userRepository := user.NewInMemoryRepository()
@@ -61,9 +68,29 @@ func main() {
 	measurementRepository := measurement.NewInMemoryRepository()
 	measurementService := measurement.NewService(measurementRepository, parameterService)
 
+	if isProduction {
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:              sentryDsn,
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			log.Printf("Sentry initialization failed: %v\n", err)
+		}
+	}
+
+	sentryHandler := sentryfiber.New(sentryfiber.Options{
+		Repanic:         true,
+		WaitForDelivery: true,
+	})
+
 	app := fiber.New()
 
+	app.Use(sentryHandler)
+
 	app.Use(recover.New())
+
+	app.All("/error", func(_ *fiber.Ctx) error {
+		panic("y tho")
+	})
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		now := time.Now()
