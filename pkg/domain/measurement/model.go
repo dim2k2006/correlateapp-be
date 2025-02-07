@@ -73,6 +73,10 @@ func (fm *FloatMeasurement) GetUpdatedAt() time.Time {
 	return fm.UpdatedAt
 }
 
+func (fm *FloatMeasurement) GetValue() float64 {
+	return fm.Value
+}
+
 type BooleanMeasurement struct {
 	BaseMeasurement
 	Value bool `json:"value"` // Boolean-specific field
@@ -120,6 +124,10 @@ func (bm *BooleanMeasurement) GetCreatedAt() time.Time {
 
 func (bm *BooleanMeasurement) GetUpdatedAt() time.Time {
 	return bm.UpdatedAt
+}
+
+func (bm *BooleanMeasurement) GetValue() bool {
+	return bm.Value
 }
 
 type Measurement interface {

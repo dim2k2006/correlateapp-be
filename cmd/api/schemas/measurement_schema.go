@@ -29,19 +29,31 @@ type MeasurementResponse struct {
 	ParameterID uuid.UUID            `json:"parameterId"`
 	Timestamp   time.Time            `json:"timestamp"`
 	Notes       string               `json:"notes,omitempty"`
+	Value       interface{}          `json:"value"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
 }
 
 func NewMeasurementResponse(m measurement.Measurement) MeasurementResponse {
-	return MeasurementResponse{
-		ID:          m.GetID(),
-		Type:        m.GetType(),
-		UserID:      m.GetUserID(),
-		ParameterID: m.GetParameterID(),
-		Timestamp:   m.GetTimestamp(),
-		Notes:       m.GetNotes(),
-		CreatedAt:   m.GetCreatedAt(),
-		UpdatedAt:   m.GetUpdatedAt(),
+	switch m.GetType() {
+	case measurement.DataTypeFloat:
+		floatMeasurement, err := m.(*measurement.FloatMeasurement)
+		if err {
+			return MeasurementResponse{}
+		}
+
+		return MeasurementResponse{
+			ID:          floatMeasurement.GetID(),
+			Type:        floatMeasurement.GetType(),
+			UserID:      floatMeasurement.GetUserID(),
+			ParameterID: floatMeasurement.GetParameterID(),
+			Timestamp:   floatMeasurement.GetTimestamp(),
+			Notes:       floatMeasurement.GetNotes(),
+			Value:       floatMeasurement.GetValue(),
+			CreatedAt:   floatMeasurement.GetCreatedAt(),
+			UpdatedAt:   floatMeasurement.GetUpdatedAt(),
+		}
+	default:
+		return MeasurementResponse{}
 	}
 }
