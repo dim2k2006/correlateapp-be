@@ -40,7 +40,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 				ID:          uuid.New(),
 				UserID:      input.UserID,
 				ParameterID: measurementParameter.ID,
-				Timestamp:   input.Timestamp,
+				Timestamp:   time.Now(),
 				Notes:       input.Notes,
 				CreatedAt:   time.Now(),
 				UpdatedAt:   time.Now(),

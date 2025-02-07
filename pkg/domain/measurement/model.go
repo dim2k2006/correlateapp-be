@@ -14,14 +14,14 @@ const (
 )
 
 type BaseMeasurement struct {
-	Type        Type      `json:"type"`
-	ID          uuid.UUID `json:"id"`
-	UserID      uuid.UUID `json:"userId"`
-	ParameterID uuid.UUID `json:"parameterId"`
-	Timestamp   time.Time `json:"timestamp"`
-	Notes       string    `json:"notes,omitempty"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Type        Type
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	ParameterID uuid.UUID
+	Timestamp   time.Time
+	Notes       string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type FloatMeasurement struct {
