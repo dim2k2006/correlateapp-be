@@ -400,6 +400,31 @@ func main() {
 		return c.JSON(response)
 	})
 
+	measurements.Get("/parameter/:parameterId", func(c *fiber.Ctx) error {
+		parameterIDStr := c.Params("parameterId")
+		parameterID, err := uuid.Parse(parameterIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid parameter ID",
+			})
+		}
+
+		ctx := context.Background()
+		measurementsData, err := measurementService.ListMeasurementsByParameter(ctx, parameterID)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		var response []schemas.MeasurementResponse
+		for _, measurementItem := range measurementsData {
+			response = append(response, schemas.NewMeasurementResponse(measurementItem))
+		}
+
+		return c.JSON(response)
+	})
+
 	log.Println("Starting server on " + port)
 
 	if err := app.Listen(":" + port); err != nil {
