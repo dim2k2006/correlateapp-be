@@ -315,6 +315,26 @@ func main() {
 		return c.JSON(schemas.NewParameterResponse(updatedParameter))
 	})
 
+	parameters.Delete("/:id", func(c *fiber.Ctx) error {
+		idStr := c.Params("id")
+		id, uuidParseErr := uuid.Parse(idStr)
+		if uuidParseErr != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid parameter ID",
+			})
+		}
+
+		ctx := context.Background()
+		if err := parameterService.DeleteParameter(ctx, id); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		// Return no content status upon successful deletion.
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
 	// TODO implement routes for measurements
 
 	log.Println("Starting server on " + port)
