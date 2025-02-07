@@ -24,8 +24,7 @@ type CreateParameterInput struct {
 
 type UpdateParameterInput struct {
 	ID          uuid.UUID
-	Name        string
-	Description string
-	DataType    DataType
-	Unit        string
+	Name        *string
+	Description *string
+	Unit        *string
 }

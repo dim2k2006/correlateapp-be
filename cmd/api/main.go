@@ -300,7 +300,6 @@ func main() {
 			ID:          id,
 			Name:        req.Name,
 			Description: req.Description,
-			DataType:    req.DataType,
 			Unit:        req.Unit,
 		}
 

@@ -61,17 +61,14 @@ func (s *ServiceImpl) UpdateParameter(ctx context.Context, input UpdateParameter
 		return nil, err
 	}
 
-	if input.Name != "" {
-		parameter.Name = input.Name
+	if input.Name != nil {
+		parameter.Name = *input.Name
 	}
-	if input.Description != "" {
-		parameter.Description = input.Description
+	if input.Description != nil {
+		parameter.Description = *input.Description
 	}
-	if input.DataType != "" {
-		parameter.DataType = input.DataType
-	}
-	if input.Unit != "" {
-		parameter.Unit = input.Unit
+	if input.Unit != nil {
+		parameter.Unit = *input.Unit
 	}
 
 	parameter.UpdatedAt = time.Now()
