@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"errors"
 	"sync"
 
 	"github.com/google/uuid"
@@ -18,10 +17,6 @@ func NewInMemoryRepository() *InMemoryRepository {
 		users: make(map[uuid.UUID]*User),
 	}
 }
-
-var (
-	ErrUserNotFound = errors.New("user not found")
-)
 
 func (r *InMemoryRepository) CreateUser(_ context.Context, user *User) (*User, error) {
 	r.mu.Lock()

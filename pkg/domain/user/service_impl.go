@@ -24,7 +24,7 @@ func NewService(repo Repository) Service {
 
 func (s *serviceImpl) CreateUser(ctx context.Context, input CreateUserInput) (*User, error) {
 	user, err := s.repo.GetUserByExternalID(ctx, input.ExternalID)
-	if err != nil {
+	if err != nil && !errors.Is(err, ErrUserNotFound) {
 		return nil, err
 	}
 
