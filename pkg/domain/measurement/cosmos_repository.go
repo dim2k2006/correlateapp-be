@@ -119,6 +119,17 @@ func (r *CosmosMeasurementRepository) ListMeasurementsByParameter(
 	return measurements, nil
 }
 
+func (r *CosmosMeasurementRepository) DeleteMeasurement(ctx context.Context, id uuid.UUID, parameterID uuid.UUID) error {
+	pk := azcosmos.NewPartitionKeyString(parameterID.String())
+
+	_, err := r.container.DeleteItem(ctx, pk, id.String(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to delete measurement from Cosmos DB: %w", err)
+	}
+
+	return nil
+}
+
 type CosmosMeasurement struct {
 	Type        DataType    `json:"type"`
 	ID          uuid.UUID   `json:"id"`
