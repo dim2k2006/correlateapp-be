@@ -127,6 +127,23 @@ func (r *CosmosParameterRepository) UpdateParameter(ctx context.Context, param *
 	return param, nil
 }
 
+func (r *CosmosParameterRepository) DeleteParameter(ctx context.Context, id uuid.UUID) error {
+	// First, retrieve the parameter to get its UserID (required for partition key)
+	param, err := r.GetParameterByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	pk := azcosmos.NewPartitionKeyString(param.UserID.String())
+
+	_, err = r.container.DeleteItem(ctx, pk, id.String(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to delete parameter from Cosmos DB: %w", err)
+	}
+
+	return nil
+}
+
 type CosmosParameter struct {
 	ID          uuid.UUID `json:"id"`
 	UserID      uuid.UUID `json:"userId"`
