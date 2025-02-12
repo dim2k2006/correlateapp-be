@@ -3,6 +3,7 @@ package parameter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -55,21 +56,31 @@ func (r *CosmosParameterRepository) CreateParameter(ctx context.Context, paramet
 }
 
 func (r *CosmosParameterRepository) GetParameterByID(ctx context.Context, id uuid.UUID) (*Parameter, error) {
-	pk := azcosmos.NewPartitionKeyString(id.String())
-
-	resp, readItemErr := r.container.ReadItem(ctx, pk, id.String(), nil)
-	if readItemErr != nil {
-		return nil, ErrParameterNotFound
+	query := "SELECT * FROM parameters p WHERE p.id = @id"
+	params := []azcosmos.QueryParameter{
+		{Name: "@id", Value: id.String()},
 	}
 
-	var cosmosParameter *CosmosParameter
-	if err := json.Unmarshal(resp.Value, &cosmosParameter); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal parameter: %w", err)
+	queryOptions := &azcosmos.QueryOptions{QueryParameters: params}
+	pager := r.container.NewQueryItemsPager(query, azcosmos.NewPartitionKey(), queryOptions)
+
+	var cosmosParameter CosmosParameter
+	for pager.More() {
+		resp, nextPageErr := pager.NextPage(ctx)
+		if nextPageErr != nil {
+			return nil, fmt.Errorf("query failed: %w", nextPageErr)
+		}
+
+		if len(resp.Items) > 0 {
+			if err := json.Unmarshal(resp.Items[0], &cosmosParameter); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal parameter: %w", err)
+			}
+
+			return NewParameter(&cosmosParameter), nil
+		}
 	}
 
-	parameter := NewParameter(cosmosParameter)
-
-	return parameter, nil
+	return nil, errors.New("parameter not found")
 }
 
 type CosmosParameter struct {
