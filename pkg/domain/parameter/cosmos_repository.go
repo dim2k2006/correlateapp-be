@@ -111,6 +111,22 @@ func (r *CosmosParameterRepository) ListParametersByUser(ctx context.Context, us
 	return parameters, nil
 }
 
+func (r *CosmosParameterRepository) UpdateParameter(ctx context.Context, param *Parameter) (*Parameter, error) {
+	paramJSON, err := json.Marshal(NewCosmosParameter(param))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal parameter: %w", err)
+	}
+
+	pk := azcosmos.NewPartitionKeyString(param.UserID.String())
+
+	_, err = r.container.ReplaceItem(ctx, pk, param.ID.String(), paramJSON, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update parameter in Cosmos DB: %w", err)
+	}
+
+	return param, nil
+}
+
 type CosmosParameter struct {
 	ID          uuid.UUID `json:"id"`
 	UserID      uuid.UUID `json:"userId"`
