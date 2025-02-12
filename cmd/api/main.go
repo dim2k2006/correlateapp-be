@@ -69,7 +69,10 @@ func main() {
 	}
 	userService := user.NewService(userRepository)
 
-	parameterRepository := parameter.NewInMemoryRepository()
+	parameterRepository, parameterRepositoryErr := parameter.NewCosmosParameterRepository(cosmosDBConnectionString)
+	if parameterRepositoryErr != nil {
+		log.Fatalf("failed to create parameter repository: %v", parameterRepositoryErr)
+	}
 	parameterService := parameter.NewService(parameterRepository)
 
 	measurementRepository := measurement.NewInMemoryRepository()
