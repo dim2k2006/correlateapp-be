@@ -75,7 +75,10 @@ func main() {
 	}
 	parameterService := parameter.NewService(parameterRepository)
 
-	measurementRepository := measurement.NewInMemoryRepository()
+	measurementRepository, measurementRepositoryErr := measurement.NewCosmosMeasurementRepository(cosmosDBConnectionString)
+	if measurementRepositoryErr != nil {
+		log.Fatalf("failed to create measurement repository: %v", measurementRepositoryErr)
+	}
 	measurementService := measurement.NewService(measurementRepository, parameterService)
 
 	if isProduction {
