@@ -473,7 +473,7 @@ func main() {
 			})
 		}
 
-		var response []schemas.MeasurementResponse
+		response := []schemas.MeasurementResponse{}
 		for _, measurementItem := range measurementsData {
 			response = append(response, schemas.NewMeasurementResponse(measurementItem))
 		}
