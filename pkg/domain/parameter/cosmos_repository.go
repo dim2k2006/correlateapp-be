@@ -39,20 +39,20 @@ func NewCosmosParameterRepository(connectionString string) (*CosmosParameterRepo
 	}, nil
 }
 
-func (r *CosmosParameterRepository) CreateParameter(ctx context.Context, parameter *Parameter) (*Parameter, error) {
-	parameterJSON, err := json.Marshal(NewCosmosParameter(parameter))
+func (r *CosmosParameterRepository) CreateParameter(ctx context.Context, param *Parameter) (*Parameter, error) {
+	paramJSON, err := json.Marshal(NewCosmosParameter(param))
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal parameter: %w", err)
 	}
 
-	pk := azcosmos.NewPartitionKeyString(parameter.ID.String())
+	pk := azcosmos.NewPartitionKeyString(param.UserID.String())
 
-	_, err = r.container.CreateItem(ctx, pk, parameterJSON, nil)
+	_, err = r.container.CreateItem(ctx, pk, paramJSON, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create parameter in Cosmos DB: %w", err)
 	}
 
-	return parameter, nil
+	return param, nil
 }
 
 func (r *CosmosParameterRepository) GetParameterByID(ctx context.Context, id uuid.UUID) (*Parameter, error) {
