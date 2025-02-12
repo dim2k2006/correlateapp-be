@@ -3,6 +3,7 @@ package measurement
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -119,8 +120,46 @@ func (r *CosmosMeasurementRepository) ListMeasurementsByParameter(
 	return measurements, nil
 }
 
-func (r *CosmosMeasurementRepository) DeleteMeasurement(ctx context.Context, id uuid.UUID, parameterID uuid.UUID) error {
-	pk := azcosmos.NewPartitionKeyString(parameterID.String())
+func (r *CosmosMeasurementRepository) GetMeasurementByID(
+	ctx context.Context,
+	id uuid.UUID,
+) (Measurement, error) {
+	query := "SELECT * FROM measurements m WHERE m.id = @id"
+	params := []azcosmos.QueryParameter{
+		{Name: "@id", Value: id.String()},
+	}
+
+	queryOptions := &azcosmos.QueryOptions{QueryParameters: params}
+	pager := r.container.NewQueryItemsPager(query, azcosmos.NewPartitionKey(), queryOptions)
+
+	var cosmosMeasurement CosmosMeasurement
+	for pager.More() {
+		resp, nextPageErr := pager.NextPage(ctx)
+		if nextPageErr != nil {
+			return nil, fmt.Errorf("query failed: %w", nextPageErr)
+		}
+
+		if len(resp.Items) > 0 {
+			if err := json.Unmarshal(resp.Items[0], &cosmosMeasurement); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal parameter: %w", err)
+			}
+
+			return NewMeasurement(&cosmosMeasurement), nil
+		}
+	}
+
+	return nil, errors.New("parameter not found")
+}
+
+func (r *CosmosMeasurementRepository) DeleteMeasurement(
+	ctx context.Context,
+	id uuid.UUID,
+) error {
+	measurement, getMeasurementErr := r.GetMeasurementByID(ctx, id)
+	if getMeasurementErr != nil {
+		return fmt.Errorf("failed to get measurement from Cosmos DB: %w", getMeasurementErr)
+	}
+	pk := azcosmos.NewPartitionKeyString(measurement.GetParameterID().String())
 
 	_, err := r.container.DeleteItem(ctx, pk, id.String(), nil)
 	if err != nil {
