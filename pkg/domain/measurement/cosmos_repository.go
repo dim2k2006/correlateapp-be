@@ -184,17 +184,20 @@ type CosmosMeasurement struct {
 func NewCosmosMeasurement(m Measurement) *CosmosMeasurement {
 	switch m.GetType() {
 	case DataTypeFloat:
-		return &CosmosMeasurement{
-			Type:        m.GetType(),
-			ID:          m.GetID(),
-			UserID:      m.GetUserID(),
-			ParameterID: m.GetParameterID(),
-			Timestamp:   m.GetTimestamp(),
-			Notes:       m.GetNotes(),
-			CreatedAt:   m.GetCreatedAt(),
-			UpdatedAt:   m.GetUpdatedAt(),
-			Value:       m.(*FloatMeasurement).Value,
+		if floatMeas, ok := m.(*FloatMeasurement); ok {
+			return &CosmosMeasurement{
+				Type:        m.GetType(),
+				ID:          m.GetID(),
+				UserID:      m.GetUserID(),
+				ParameterID: m.GetParameterID(),
+				Timestamp:   m.GetTimestamp(),
+				Notes:       m.GetNotes(),
+				CreatedAt:   m.GetCreatedAt(),
+				UpdatedAt:   m.GetUpdatedAt(),
+				Value:       floatMeas.Value,
+			}
 		}
+		return nil
 	default:
 		return nil
 	}
@@ -203,19 +206,22 @@ func NewCosmosMeasurement(m Measurement) *CosmosMeasurement {
 func NewMeasurement(m *CosmosMeasurement) Measurement {
 	switch m.Type {
 	case DataTypeFloat:
-		return &FloatMeasurement{
-			BaseMeasurement: BaseMeasurement{
-				Type:        m.Type,
-				ID:          m.ID,
-				UserID:      m.UserID,
-				ParameterID: m.ParameterID,
-				Timestamp:   m.Timestamp,
-				Notes:       m.Notes,
-				CreatedAt:   m.CreatedAt,
-				UpdatedAt:   m.UpdatedAt,
-			},
-			Value: m.Value.(float64),
+		if value, ok := m.Value.(float64); ok {
+			return &FloatMeasurement{
+				BaseMeasurement: BaseMeasurement{
+					Type:        m.Type,
+					ID:          m.ID,
+					UserID:      m.UserID,
+					ParameterID: m.ParameterID,
+					Timestamp:   m.Timestamp,
+					Notes:       m.Notes,
+					CreatedAt:   m.CreatedAt,
+					UpdatedAt:   m.UpdatedAt,
+				},
+				Value: value, // Safe type assertion
+			}
 		}
+		return nil // Return nil if type assertion fails
 	default:
 		return nil
 	}
