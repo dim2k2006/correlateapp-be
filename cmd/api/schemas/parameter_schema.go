@@ -17,10 +17,9 @@ type CreateParameterRequest struct {
 }
 
 type UpdateParameterRequest struct {
-	ID          uuid.UUID `json:"id" validate:"required,uuid4"`
-	Name        *string   `json:"name,omitempty" validate:"omitempty,min=2,max=100"`
-	Description *string   `json:"description,omitempty" validate:"omitempty"`
-	Unit        *string   `json:"unit,omitempty" validate:"omitempty"`
+	Name        *string `json:"name,omitempty" validate:"omitempty,min=2,max=100"`
+	Description *string `json:"description,omitempty" validate:"omitempty"`
+	Unit        *string `json:"unit,omitempty" validate:"omitempty"`
 }
 
 func getParameterRequestValidator() *validator.Validate {
