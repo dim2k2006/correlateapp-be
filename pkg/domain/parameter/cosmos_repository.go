@@ -83,6 +83,34 @@ func (r *CosmosParameterRepository) GetParameterByID(ctx context.Context, id uui
 	return nil, errors.New("parameter not found")
 }
 
+func (r *CosmosParameterRepository) ListParametersByUser(ctx context.Context, userID uuid.UUID) ([]*Parameter, error) {
+	query := "SELECT * FROM parameters p WHERE p.userId = @userID"
+	params := []azcosmos.QueryParameter{
+		{Name: "@userID", Value: userID.String()},
+	}
+
+	queryOptions := &azcosmos.QueryOptions{QueryParameters: params}
+	pager := r.container.NewQueryItemsPager(query, azcosmos.NewPartitionKey(), queryOptions)
+
+	var parameters []*Parameter
+	for pager.More() {
+		resp, nextPageErr := pager.NextPage(ctx)
+		if nextPageErr != nil {
+			return nil, fmt.Errorf("query failed: %w", nextPageErr)
+		}
+
+		for _, item := range resp.Items {
+			var cosmosParameter CosmosParameter
+			if err := json.Unmarshal(item, &cosmosParameter); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal parameter: %w", err)
+			}
+			parameters = append(parameters, NewParameter(&cosmosParameter))
+		}
+	}
+
+	return parameters, nil
+}
+
 type CosmosParameter struct {
 	ID          uuid.UUID `json:"id"`
 	UserID      uuid.UUID `json:"userId"`
