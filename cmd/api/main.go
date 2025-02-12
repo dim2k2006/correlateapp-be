@@ -56,15 +56,29 @@ func main() {
 		log.Fatal("SENTRY_DSN is empty")
 	}
 
+	cosmosDBConnectionString := os.Getenv("COSMOS_DB_CONNECTION_STRING")
+	if cosmosDBConnectionString == "" {
+		log.Fatal("COSMOS_DB_CONNECTION_STRING is empty")
+	}
+
 	isProduction := appEnv == "production"
 
-	userRepository := user.NewInMemoryRepository()
+	userRepository, userRepositoryErr := user.NewCosmosUserRepository(cosmosDBConnectionString)
+	if userRepositoryErr != nil {
+		log.Fatalf("failed to create user repository: %v", userRepositoryErr)
+	}
 	userService := user.NewService(userRepository)
 
-	parameterRepository := parameter.NewInMemoryRepository()
+	parameterRepository, parameterRepositoryErr := parameter.NewCosmosParameterRepository(cosmosDBConnectionString)
+	if parameterRepositoryErr != nil {
+		log.Fatalf("failed to create parameter repository: %v", parameterRepositoryErr)
+	}
 	parameterService := parameter.NewService(parameterRepository)
 
-	measurementRepository := measurement.NewInMemoryRepository()
+	measurementRepository, measurementRepositoryErr := measurement.NewCosmosMeasurementRepository(cosmosDBConnectionString)
+	if measurementRepositoryErr != nil {
+		log.Fatalf("failed to create measurement repository: %v", measurementRepositoryErr)
+	}
 	measurementService := measurement.NewService(measurementRepository, parameterService)
 
 	if isProduction {
@@ -308,7 +322,8 @@ func main() {
 			})
 		}
 
-		var response []schemas.ParameterResponse
+		// initialize response with empty array
+		response := []schemas.ParameterResponse{}
 		for _, p := range parametersData {
 			response = append(response, schemas.NewParameterResponse(p))
 		}
@@ -433,7 +448,7 @@ func main() {
 			})
 		}
 
-		var response []schemas.MeasurementResponse
+		response := []schemas.MeasurementResponse{}
 		for _, measurementItem := range measurementsData {
 			response = append(response, schemas.NewMeasurementResponse(measurementItem))
 		}
@@ -458,7 +473,7 @@ func main() {
 			})
 		}
 
-		var response []schemas.MeasurementResponse
+		response := []schemas.MeasurementResponse{}
 		for _, measurementItem := range measurementsData {
 			response = append(response, schemas.NewMeasurementResponse(measurementItem))
 		}
