@@ -54,6 +54,24 @@ func (r *CosmosParameterRepository) CreateParameter(ctx context.Context, paramet
 	return parameter, nil
 }
 
+func (r *CosmosParameterRepository) GetParameterByID(ctx context.Context, id uuid.UUID) (*Parameter, error) {
+	pk := azcosmos.NewPartitionKeyString(id.String())
+
+	resp, readItemErr := r.container.ReadItem(ctx, pk, id.String(), nil)
+	if readItemErr != nil {
+		return nil, ErrParameterNotFound
+	}
+
+	var cosmosParameter *CosmosParameter
+	if err := json.Unmarshal(resp.Value, &cosmosParameter); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal parameter: %w", err)
+	}
+
+	parameter := NewParameter(cosmosParameter)
+
+	return parameter, nil
+}
+
 type CosmosParameter struct {
 	ID          uuid.UUID `json:"id"`
 	UserID      uuid.UUID `json:"userId"`
