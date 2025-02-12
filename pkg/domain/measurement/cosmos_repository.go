@@ -57,6 +57,65 @@ func (r *CosmosMeasurementRepository) CreateMeasurement(
 	return measurement, nil
 }
 
+func (r *CosmosMeasurementRepository) ListMeasurementsByUser(
+	ctx context.Context,
+	userID uuid.UUID,
+) ([]Measurement, error) {
+	query := "SELECT * FROM measurements m WHERE m.userId = @userID"
+	params := []azcosmos.QueryParameter{
+		{Name: "@userID", Value: userID.String()},
+	}
+
+	queryOptions := &azcosmos.QueryOptions{QueryParameters: params}
+	pager := r.container.NewQueryItemsPager(query, azcosmos.NewPartitionKey(), queryOptions)
+
+	measurements := []Measurement{}
+	for pager.More() {
+		resp, nextPageErr := pager.NextPage(ctx)
+		if nextPageErr != nil {
+			return nil, fmt.Errorf("query failed: %w", nextPageErr)
+		}
+
+		for _, item := range resp.Items {
+			var cosmosMeasurement CosmosMeasurement
+			if err := json.Unmarshal(item, &cosmosMeasurement); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal measurement: %w", err)
+			}
+			measurements = append(measurements, NewMeasurement(&cosmosMeasurement))
+		}
+	}
+
+	return measurements, nil
+}
+
+//func (r *CosmosMeasurementRepository) ListMeasurementsByParameter(ctx context.Context, parameterID uuid.UUID) ([]Measurement, error) {
+//	query := "SELECT * FROM measurements m WHERE m.parameterId = @parameterID"
+//	params := []azcosmos.QueryParameter{
+//		{Name: "@parameterID", Value: parameterID.String()},
+//	}
+//
+//	queryOptions := &azcosmos.QueryOptions{Parameters: params}
+//	pager := r.container.NewQueryItemsPager(query, queryOptions)
+//
+//	measurements := []Measurement{}
+//	for pager.More() {
+//		resp, err := pager.NextPage(ctx)
+//		if err != nil {
+//			return nil, fmt.Errorf("query failed: %w", err)
+//		}
+//
+//		for _, item := range resp.Items {
+//			var measurement Measurement
+//			if err := json.Unmarshal(item, &measurement); err != nil {
+//				return nil, fmt.Errorf("failed to unmarshal measurement: %w", err)
+//			}
+//			measurements = append(measurements, measurement)
+//		}
+//	}
+//
+//	return measurements, nil
+//}
+
 type CosmosMeasurement struct {
 	Type        DataType    `json:"type"`
 	ID          uuid.UUID   `json:"id"`
