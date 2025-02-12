@@ -61,9 +61,7 @@ func (r *CosmosUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*
 
 	resp, readItemErr := r.container.ReadItem(ctx, pk, id.String(), nil)
 	if readItemErr != nil {
-		var responseErr *azcore.ResponseError
-		errors.As(readItemErr, &responseErr)
-		panic(responseErr)
+		return nil, ErrUserNotFound
 	}
 
 	var cosmosUser *CosmosUser
