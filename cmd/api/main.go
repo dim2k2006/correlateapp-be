@@ -56,14 +56,14 @@ func main() {
 		log.Fatal("SENTRY_DSN is empty")
 	}
 
-	cosmosDbConnectionString := os.Getenv("COSMOS_DB_CONNECTION_STRING")
-	if cosmosDbConnectionString == "" {
+	cosmosDBConnectionString := os.Getenv("COSMOS_DB_CONNECTION_STRING")
+	if cosmosDBConnectionString == "" {
 		log.Fatal("COSMOS_DB_CONNECTION_STRING is empty")
 	}
 
 	isProduction := appEnv == "production"
 
-	userRepository, userRepositoryErr := user.NewCosmosUserRepository(cosmosDbConnectionString)
+	userRepository, userRepositoryErr := user.NewCosmosUserRepository(cosmosDBConnectionString)
 	if userRepositoryErr != nil {
 		log.Fatalf("failed to create user repository: %v", userRepositoryErr)
 	}
