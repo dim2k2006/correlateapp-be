@@ -319,7 +319,8 @@ func main() {
 			})
 		}
 
-		var response []schemas.ParameterResponse
+		// initialize response with empty array
+		response := []schemas.ParameterResponse{}
 		for _, p := range parametersData {
 			response = append(response, schemas.NewParameterResponse(p))
 		}

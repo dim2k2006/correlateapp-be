@@ -92,7 +92,7 @@ func (r *CosmosParameterRepository) ListParametersByUser(ctx context.Context, us
 	queryOptions := &azcosmos.QueryOptions{QueryParameters: params}
 	pager := r.container.NewQueryItemsPager(query, azcosmos.NewPartitionKey(), queryOptions)
 
-	var parameters []*Parameter
+	parameters := []*Parameter{}
 	for pager.More() {
 		resp, nextPageErr := pager.NextPage(ctx)
 		if nextPageErr != nil {
