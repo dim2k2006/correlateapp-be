@@ -77,7 +77,7 @@ func (r *CosmosUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*
 }
 
 func (r *CosmosUserRepository) GetUserByExternalID(ctx context.Context, externalID string) (*User, error) {
-	query := "SELECT * FROM users u WHERE u.ExternalID = @externalID"
+	query := "SELECT * FROM users u WHERE u.externalId = @externalID"
 	params := []azcosmos.QueryParameter{
 		{Name: "@externalID", Value: externalID},
 	}
