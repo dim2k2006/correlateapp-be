@@ -19,6 +19,7 @@ import (
 	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -98,6 +99,8 @@ func main() {
 	app := fiber.New()
 
 	app.Use(sentryHandler)
+
+	app.Use(cors.New())
 
 	app.All("/error", func(_ *fiber.Ctx) error {
 		panic("y tho")
