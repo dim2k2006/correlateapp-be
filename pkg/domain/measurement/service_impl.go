@@ -28,6 +28,11 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 		return nil, err
 	}
 
+	ts := input.Timestamp
+	if ts.IsZero() {
+		ts = time.Now().UTC()
+	}
+
 	measurementParameterType := measurementParameter.DataType
 
 	switch measurementParameterType {
@@ -42,7 +47,7 @@ func (s *ServiceImpl) CreateMeasurement(ctx context.Context, input CreateMeasure
 				ID:          uuid.New(),
 				UserID:      measurementParameter.UserID,
 				ParameterID: measurementParameter.ID,
-				Timestamp:   time.Now().UTC(),
+				Timestamp:   ts,
 				Notes:       input.Notes,
 				CreatedAt:   time.Now().UTC(),
 				UpdatedAt:   time.Now().UTC(),

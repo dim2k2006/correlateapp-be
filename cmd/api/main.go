@@ -421,6 +421,7 @@ func main() {
 			ParameterID: req.ParameterID,
 			Notes:       req.Notes,
 			Value:       req.Value,
+			Timestamp:   req.Timestamp,
 		}
 
 		ctx := context.Background()
