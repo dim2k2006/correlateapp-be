@@ -12,6 +12,7 @@ type CreateMeasurementRequest struct {
 	ParameterID uuid.UUID   `json:"parameterId" validate:"required,uuid4"`
 	Notes       string      `json:"notes,omitempty" validate:"omitempty"`
 	Value       interface{} `json:"value" validate:"required,min=1"`
+	Timestamp   time.Time   `json:"timestamp,omitempty" validate:"omitempty"`
 }
 
 func getMeasurementRequestValidator() *validator.Validate {

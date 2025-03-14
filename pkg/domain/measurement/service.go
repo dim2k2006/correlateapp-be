@@ -2,6 +2,7 @@ package measurement
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,4 +18,5 @@ type CreateMeasurementInput struct {
 	ParameterID uuid.UUID
 	Notes       string
 	Value       interface{}
+	Timestamp   time.Time
 }
