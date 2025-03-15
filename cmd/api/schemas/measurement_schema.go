@@ -11,7 +11,7 @@ import (
 type CreateMeasurementRequest struct {
 	ParameterID uuid.UUID   `json:"parameterId" validate:"required,uuid4"`
 	Notes       string      `json:"notes,omitempty" validate:"omitempty"`
-	Value       interface{} `json:"value" validate:"required,min=1"`
+	Value       interface{} `json:"value" validate:"required"`
 	Timestamp   time.Time   `json:"timestamp,omitempty" validate:"omitempty"`
 }
 
